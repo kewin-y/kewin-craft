@@ -1,15 +1,32 @@
-CC = g++
-CFLAGS = -Wall -Wextra
-LDFLAGS = -lglfw -lGL -lX11 -lpthread -lXrandr -lXi -ldl -lm -I./include
+CXX := g++
+CXXFLAGS := -Wall -Wextra -std=c++17 -I./include
+LDFLAGS := -lglfw -lGL -lX11 -lpthread -lXrandr -lXi -ldl -lm
 
-./bin/kc: ./src/*.cpp
-	${CC} -o ./bin/kc ./src/*.cpp $(CFLAGS) $(LDFLAGS)
+SRC_DIR := src
+OBJ_DIR := obj
+BIN_DIR := bin
+EXEC := kwnc
 
-.PHONY: test clean
+SRC := $(wildcard $(SRC_DIR)/*.cpp)
+OBJ := $(patsubst $(SRC_DIR)/%.cpp, $(OBJ_DIR)/%.o, $(SRC))
 
-test: ./bin/kc
-	./bin/kc
+.PHONY: all
+all: $(BIN_DIR)/$(EXEC)
 
-clean: ./bin/kc
-	rm -f ./bin/kc
+$(BIN_DIR)/$(EXEC): $(OBJ)
+	@mkdir -p $(BIN_DIR)
+	$(CXX) -o $@ $^ $(LDFLAGS)
+
+$(OBJ_DIR)/%.o: $(SRC_DIR)/%.cpp
+	@mkdir -p $(OBJ_DIR)
+	$(CXX) $(CXXFLAGS) -c $< -o $@
+
+.PHONY: test
+test: $(BIN_DIR)/$(EXEC)
+	./$<
+
+.PHONY: clean
+clean:
+	rm -rf $(OBJ_DIR) $(BIN_DIR)
+
 
