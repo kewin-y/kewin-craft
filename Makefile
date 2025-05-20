@@ -13,9 +13,13 @@ OBJ := $(patsubst $(SRC_DIR)/%.cpp, $(OBJ_DIR)/%.o, $(SRC))
 .PHONY: all
 all: $(BIN_DIR)/$(EXEC)
 
-$(BIN_DIR)/$(EXEC): $(OBJ)
+$(BIN_DIR)/$(EXEC): $(OBJ) $(OBJ_DIR)/gl.o
 	@mkdir -p $(BIN_DIR)
 	$(CXX) -o $@ $^ $(LDFLAGS)
+
+$(OBJ_DIR)/gl.o: $(SRC_DIR)/gl.c
+	@mkdir -p $(OBJ_DIR)
+	$(CXX) $(CXXFLAGS) -c $< -o $@
 
 $(OBJ_DIR)/%.o: $(SRC_DIR)/%.cpp
 	@mkdir -p $(OBJ_DIR)
