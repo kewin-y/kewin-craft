@@ -17,4 +17,4 @@ class App
 };
 } // namespace kwnc
 
-#endif // APP_HPP
+#endif // 1APP_HPP

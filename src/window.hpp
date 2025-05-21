@@ -26,4 +26,4 @@ private:
 };
 } // namespace kwnc
 
-#endif // WINDOW_HPP
+#endif // !WINDOW_HPP

@@ -28,6 +28,7 @@ Window::Window(int w, int h, const std::string &n)
 
         if (!gladLoadGL((GLADloadfunc)glfwGetProcAddress)) {
                 std::cerr << "Failed to load GLAD\n";
+                glfwDestroyWindow(glfw_window);
                 glfwTerminate();
                 exit(1);
         }
