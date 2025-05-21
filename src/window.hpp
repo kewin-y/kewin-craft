@@ -13,11 +13,15 @@ public:
         int width;
         int height;
         std::string name;
-        GLFWwindow *self;
+
         Window(int w, int h, const std::string &n);
         ~Window();
 
+        GLFWwindow *get_glfw_window();
+
 private:
+        GLFWwindow *glfw_window;
+
         static void fb_size_callback(GLFWwindow *win, int width, int height);
 };
 } // namespace kwnc
