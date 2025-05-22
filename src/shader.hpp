@@ -15,6 +15,7 @@ class Shader
                 unsigned int get_id();
         private:
                 unsigned int id;
+
                 std::string get_file_content(const std::string &path);
                 void check_compile_errors(unsigned int shader);
                 void check_linking_errors();

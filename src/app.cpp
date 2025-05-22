@@ -3,9 +3,6 @@
 #include "window.hpp"
 #include <GLFW/glfw3.h>
 
-constexpr int WIDTH = 800;
-constexpr int HEIGHT = 600;
-
 namespace kwnc
 {
 App::App() : window{WIDTH, HEIGHT, "Kevin Craft"} {}
@@ -17,7 +14,8 @@ void App::run()
                 glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
                 glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-                if (glfwGetKey(window.get_glfw_window(), GLFW_KEY_ESCAPE) == GLFW_PRESS) {
+                if (glfwGetKey(window.get_glfw_window(), GLFW_KEY_ESCAPE) ==
+                    GLFW_PRESS) {
                         glfwSetWindowShouldClose(window.get_glfw_window(), 1);
                 }
 

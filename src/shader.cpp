@@ -36,10 +36,7 @@ Shader::Shader(const std::string &vertex_path, const std::string &fragment_path)
 
 Shader::~Shader() {}
 
-unsigned int Shader::get_id()
-{
-        return id;
-}
+unsigned int Shader::get_id() { return id; }
 
 std::string Shader::get_file_content(const std::string &path)
 {

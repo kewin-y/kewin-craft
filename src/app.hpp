@@ -7,13 +7,17 @@ namespace kwnc
 {
 class App
 {
-        public:
-                App();
-                ~App();
+public:
+        static constexpr int WIDTH = 800;
+        static constexpr int HEIGHT = 600;
 
-                void run();
-        private:
-                Window window;
+        App();
+        ~App();
+
+        void run();
+
+private:
+        Window window;
 };
 } // namespace kwnc
 
