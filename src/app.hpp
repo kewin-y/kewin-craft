@@ -2,6 +2,8 @@
 #define APP_HPP
 
 #include "window.hpp"
+#include "chunk.hpp"
+#include "shader.hpp"
 
 namespace kwnc
 {
@@ -18,6 +20,8 @@ public:
 
 private:
         Window window;
+        Shader shader;
+        Chunk chunk;
 };
 } // namespace kwnc
 

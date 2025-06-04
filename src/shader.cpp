@@ -32,11 +32,18 @@ Shader::Shader(const std::string &vertex_path, const std::string &fragment_path)
         glAttachShader(id, fragment_shader);
         glLinkProgram(id);
         check_linking_errors();
+
+        glDeleteShader(vertex_shader);
+        glDeleteShader(fragment_shader);
 }
 
-Shader::~Shader() {}
+Shader::~Shader() { glDeleteProgram(id); }
 
 unsigned int Shader::get_id() { return id; }
+void Shader::use()
+{
+        glUseProgram(id);
+}
 
 std::string Shader::get_file_content(const std::string &path)
 {

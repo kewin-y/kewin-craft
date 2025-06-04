@@ -13,6 +13,7 @@ class Shader
                 ~Shader();
 
                 unsigned int get_id();
+                void use();
         private:
                 unsigned int id;
 

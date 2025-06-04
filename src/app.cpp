@@ -5,7 +5,14 @@
 
 namespace kwnc
 {
-App::App() : window{WIDTH, HEIGHT, "Kevin Craft"} {}
+App::App()
+    : window{WIDTH, HEIGHT, "Kevin Craft"},
+      shader{"assets/shaders/frag.glsl", "assets/shaders/vert.glsl"},
+      chunk{0, 0, 0}
+{
+        chunk.generate_mesh();
+        glEnable(GL_DEPTH_TEST);
+}
 App::~App() {}
 
 void App::run()
@@ -18,6 +25,9 @@ void App::run()
                     GLFW_PRESS) {
                         glfwSetWindowShouldClose(window.get_glfw_window(), 1);
                 }
+
+                shader.use();
+                chunk.vertex_array.draw();
 
                 // RENDER
                 glfwSwapBuffers(window.get_glfw_window());

@@ -26,7 +26,7 @@
 
           buildInputs = with pkgs; [
             glfw
-            cglm
+            glm
             stb
             xorg.libX11
             xorg.libXrandr
