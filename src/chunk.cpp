@@ -130,7 +130,7 @@ void Chunk::generate_mesh()
         for (int i = 0; i < CHUNK_SIZE_CUBED; i++) {
                 x = i % CHUNK_SIZE;
                 y = (i % CHUNK_SIZE_SQUARED) / CHUNK_SIZE;
-                z = (i % CHUNK_SIZE_CUBED) / CHUNK_SIZE_CUBED;
+                z = (i % CHUNK_SIZE_CUBED) / CHUNK_SIZE_SQUARED;
 
                 for (int j = 0; j < 36; j++) {
                         current->position = positions[j] + glm::vec3{x, y, z};
