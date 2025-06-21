@@ -9,9 +9,9 @@ namespace kwnc
 class Camera
 {
 public:
-        glm::vec3 position{0.0f, 0.0f, 1.0f};
+        glm::vec3 position{0.0f, 50.0f, 50.0f};
         glm::vec3 direction{0.0f, 0.0f, -0.1f};
-        glm::vec3 target{0.0f, 0.0f, 0.9f};
+        glm::vec3 target{0.0f, 50.0f, 49.9f};
 
         // NOTE: Given that this game is Minecraft clone, there
         // should be no reason why this vector changes
