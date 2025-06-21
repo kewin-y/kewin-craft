@@ -67,5 +67,14 @@ void Camera::handle_keyboard(const Window &win)
         if (glfwGetKey(win.get_glfw_window(), GLFW_KEY_D) == GLFW_PRESS) {
                 position += (speed * win.delta_time) * right;
         }
+
+        if (glfwGetKey(win.get_glfw_window(), GLFW_KEY_SPACE) == GLFW_PRESS) {
+                position += (speed * win.delta_time) * up;
+        }
+
+        if (glfwGetKey(win.get_glfw_window(), GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS) {
+                position += (-speed * win.delta_time) * up;
+        }
+
 }
 } // namespace kwnc

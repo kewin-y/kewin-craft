@@ -26,6 +26,9 @@ private:
         int chunk_y;
         int chunk_z;
         Block *blocks;
+
+        int chunk_pos_to_idx(int x, int y, int z);
+        void idx_to_chunk_pos(int i, int *x, int *y, int *z);
 };
 } // namespace kwnc
 
