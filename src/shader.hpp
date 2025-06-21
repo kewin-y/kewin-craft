@@ -14,6 +14,8 @@ class Shader
 
                 unsigned int get_id();
                 void use();
+
+                void uniform_m4(const std::string &name, float *mat);
         private:
                 unsigned int id;
 

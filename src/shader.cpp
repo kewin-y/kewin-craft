@@ -40,9 +40,13 @@ Shader::Shader(const std::string &vertex_path, const std::string &fragment_path)
 Shader::~Shader() { glDeleteProgram(id); }
 
 unsigned int Shader::get_id() { return id; }
-void Shader::use()
+
+void Shader::use() { glUseProgram(id); }
+
+void Shader::uniform_m4(const std::string &name, float *mat)
 {
-        glUseProgram(id);
+        glUniformMatrix4fv(glGetUniformLocation(id, name.c_str()), 1, GL_FALSE,
+                           mat);
 }
 
 std::string Shader::get_file_content(const std::string &path)

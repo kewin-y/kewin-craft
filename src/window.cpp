@@ -9,12 +9,15 @@ namespace kwnc
 Window::Window(int w, int h, const std::string &n)
     : width{w}, height{h}, name{n}
 {
+        aspect = (float)width / (float)height;
+
         glfwInit();
         glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
         glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
         glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-        glfw_window = glfwCreateWindow(width, height, name.c_str(), nullptr, nullptr);
+        glfw_window =
+            glfwCreateWindow(width, height, name.c_str(), nullptr, nullptr);
 
         if (nullptr == glfw_window) {
                 std::cerr << "Failed to create window\n";
@@ -40,10 +43,11 @@ Window::~Window()
         glfwTerminate();
 }
 
-GLFWwindow *Window::get_glfw_window()
-{
-        return glfw_window;
-}
+GLFWwindow *Window::get_glfw_window() const { return glfw_window; }
+
+int Window::get_first_mouse() const { return first_mouse; }
+
+void Window::mouse_entered() { first_mouse = 0; }
 
 void Window::fb_size_callback(GLFWwindow *win, int width, int height)
 {
@@ -53,5 +57,6 @@ void Window::fb_size_callback(GLFWwindow *win, int width, int height)
 
         window->width = width;
         window->height = height;
+        window->aspect = (float)width / (float)height;
 }
 } // namespace kwnc

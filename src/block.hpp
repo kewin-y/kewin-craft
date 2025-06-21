@@ -8,7 +8,7 @@ namespace kwnc
 enum class Block : int { AIR, DIRT, STONE };
 
 struct Block_Vertex {
-        glm::vec3 position;
+        glm::vec3 position; // Represents chunk coordinates
         glm::vec3 normal;
         int block_type;
 };

@@ -1,8 +1,12 @@
 #version 330 core
 
-out vec4 FragColor;
+layout (location = 0) in vec3 a_position;
+layout (location = 1) in vec3 a_normal;
+layout (location = 1) in int a_block_type;
+
+uniform mat4 mvp;
 
 void main()
 {
-        FragColor = vec4(0.0f, 0.0f, 1.0f, 1.0f);
+        gl_Position = mvp * vec4(a_position, 1.0f);
 }

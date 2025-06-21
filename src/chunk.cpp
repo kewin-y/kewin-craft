@@ -5,8 +5,7 @@
 #include <glm/glm.hpp>
 #include <iostream>
 
-// NOTE: This is some very garbage code, will be improved upon later :)
-// I PROMISE
+// I promise I'll make this code better
 
 // clang-format off
 static glm::vec3 positions[] = {

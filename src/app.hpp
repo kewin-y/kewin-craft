@@ -4,6 +4,8 @@
 #include "window.hpp"
 #include "chunk.hpp"
 #include "shader.hpp"
+#include "camera.hpp"
+#include <glm/glm.hpp>
 
 namespace kwnc
 {
@@ -22,6 +24,10 @@ private:
         Window window;
         Shader shader;
         Chunk chunk;
+        Camera camera;
+
+        void handle_keyboard();
+        glm::mat4 get_view_projection();
 };
 } // namespace kwnc
 
