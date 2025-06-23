@@ -129,18 +129,15 @@ static glm::vec3 normals_py[] = {
 
 namespace kwnc
 {
-Chunk::Chunk(int x, int y, int z) : vertex_array{}
+Chunk::Chunk(int x, int y, int z) : position{x, y, z}, vertex_array{}
 {
-        chunk_x = x;
-        chunk_y = y;
-        chunk_z = z;
-
-        // TODO: Wrap this in a try-catch
         blocks = new Block[CHUNK_SIZE_CUBED];
 
         for (int i = 0; i < CHUNK_SIZE_CUBED; i++) {
                 blocks[i] = Block::STONE;
         }
+
+        blocks[0] = Block::AIR;
 }
 
 Chunk::~Chunk() { delete[] blocks; }
@@ -149,7 +146,7 @@ Chunk::~Chunk() { delete[] blocks; }
 // for (int j = 0; j < 36; j++) {
 //         current->position = positions[j] + glm::vec3{x, y, z};
 //         current->normal = normals[j];
-//         current->block_type = (int)blocks[i];
+//         current->block_type = static_cast<int>(blocks[i];
 //         current++;
 // }
 
@@ -165,6 +162,9 @@ void Chunk::generate_mesh()
         for (int i = 0; i < CHUNK_SIZE_CUBED; ++i) {
                 idx_to_chunk_pos(i, &x, &y, &z);
 
+                if (blocks[i] == Block::AIR)
+                        continue;
+
                 // Negative Z
                 if (z - 1 < 0 ||
                     blocks[chunk_pos_to_idx(x, y, z - 1)] == Block::AIR) {
@@ -172,7 +172,8 @@ void Chunk::generate_mesh()
                                 current->position =
                                     face_nz[j] + glm::vec3{x, y, z};
                                 current->normal = normals_nz[j];
-                                current->block_type = (int)blocks[i];
+                                current->block_type =
+                                    static_cast<int>(blocks[i]);
                                 current++;
                         }
                 }
@@ -183,7 +184,8 @@ void Chunk::generate_mesh()
                                 current->position =
                                     face_pz[j] + glm::vec3{x, y, z};
                                 current->normal = normals_pz[j];
-                                current->block_type = (int)blocks[i];
+                                current->block_type =
+                                    static_cast<int>(blocks[i]);
                                 current++;
                         }
                 }
@@ -194,7 +196,8 @@ void Chunk::generate_mesh()
                                 current->position =
                                     face_nx[j] + glm::vec3{x, y, z};
                                 current->normal = normals_nx[j];
-                                current->block_type = (int)blocks[i];
+                                current->block_type =
+                                    static_cast<int>(blocks[i]);
                                 current++;
                         }
                 }
@@ -205,7 +208,8 @@ void Chunk::generate_mesh()
                                 current->position =
                                     face_px[j] + glm::vec3{x, y, z};
                                 current->normal = normals_px[j];
-                                current->block_type = (int)blocks[i];
+                                current->block_type =
+                                    static_cast<int>(blocks[i]);
                                 current++;
                         }
                 }
@@ -216,7 +220,8 @@ void Chunk::generate_mesh()
                                 current->position =
                                     face_ny[j] + glm::vec3{x, y, z};
                                 current->normal = normals_ny[j];
-                                current->block_type = (int)blocks[i];
+                                current->block_type =
+                                    static_cast<int>(blocks[i]);
                                 current++;
                         }
                 }
@@ -227,7 +232,8 @@ void Chunk::generate_mesh()
                                 current->position =
                                     face_py[j] + glm::vec3{x, y, z};
                                 current->normal = normals_py[j];
-                                current->block_type = (int)blocks[i];
+                                current->block_type =
+                                    static_cast<int>(blocks[i]);
                                 current++;
                         }
                 }

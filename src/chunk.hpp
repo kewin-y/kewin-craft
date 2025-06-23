@@ -3,6 +3,7 @@
 
 #include "block.hpp"
 #include "block_vertex_array.hpp"
+#include <glm/glm.hpp>
 
 namespace kwnc
 {
@@ -14,6 +15,7 @@ public:
         static constexpr int CHUNK_SIZE_CUBED =
             CHUNK_SIZE * CHUNK_SIZE * CHUNK_SIZE;
 
+        glm::vec3 position;
         Block_Vertex_Array vertex_array;
 
         Chunk(int x, int y, int z);
@@ -22,9 +24,6 @@ public:
         void generate_mesh();
 
 private:
-        int chunk_x; // TODO: Do something with these
-        int chunk_y;
-        int chunk_z;
         Block *blocks;
 
         int chunk_pos_to_idx(int x, int y, int z);

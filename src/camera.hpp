@@ -19,7 +19,7 @@ public:
 
         const float FOV = 45.0f;
         const float sensitivity = 0.2f;
-        const float speed = 2.5f;
+        const float speed = 5.5f;
 
         Camera();
         ~Camera();

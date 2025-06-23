@@ -16,8 +16,10 @@ App::App()
       chunk{0, 0, 0}, camera{}
 {
         chunk.generate_mesh();
+
         glfwSetInputMode(window.get_glfw_window(), GLFW_CURSOR,
                          GLFW_CURSOR_DISABLED);
+
         glEnable(GL_DEPTH_TEST);
 }
 App::~App() {}
@@ -48,6 +50,7 @@ void App::run()
                 shader.use();
                 // Update Uniforms
                 shader.uniform_m4("mvp", &vp[0][0]);
+                shader.uniform_v3("world_pos", &chunk.position[0]);
 
                 chunk.vertex_array.draw();
 

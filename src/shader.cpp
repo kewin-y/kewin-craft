@@ -49,6 +49,11 @@ void Shader::uniform_m4(const std::string &name, float *mat)
                            mat);
 }
 
+void Shader::uniform_v3(const std::string &name, float *vec)
+{
+        glUniform3fv(glGetUniformLocation(id, name.c_str()), 1, vec);
+}
+
 std::string Shader::get_file_content(const std::string &path)
 {
         std::string content;
