@@ -4,6 +4,7 @@
 #include <GLFW/glfw3.h>
 #include <glm/ext.hpp>
 #include <glm/glm.hpp>
+#include <iostream>
 #define GLM_ENABLE_EXPERIMENTAL
 #include <glm/gtx/string_cast.hpp>
 
@@ -23,17 +24,34 @@ App::~App() {}
 void App::run()
 {
         glm::mat4 vp;
-        float last_frame = 0.0f;
-        float current_frame = 0.0f;
+        float last_time = 0.0f;
+        float current_time = 0.0f;
+
+        float last_fps_calc = 0.0f;
+        float fps = 0.0f;
+        int frames = 0;
+
+        glfwSwapInterval(0);
 
         while (!glfwWindowShouldClose(window.get_glfw_window())) {
                 glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
                 glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
                 // Calculate delta_time
-                current_frame = glfwGetTime();
-                window.delta_time = current_frame - last_frame;
-                last_frame = current_frame;
+                current_time = glfwGetTime();
+                window.delta_time = current_time - last_time;
+                last_time = current_time;
+
+                frames++;
+
+                if (current_time - last_fps_calc > 0.25)
+                {
+                        fps = (float) frames / (current_time - last_fps_calc);
+                        frames = 0;
+                        last_fps_calc = current_time;
+                }
+
+                std::cout << "FPS: " << fps << "\n";
 
                 // Update game objects
                 handle_keyboard();
