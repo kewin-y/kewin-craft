@@ -6,17 +6,13 @@
 #include <glm/glm.hpp>
 #define GLM_ENABLE_EXPERIMENTAL
 #include <glm/gtx/string_cast.hpp>
-#include <iostream>
 
 namespace kwnc
 {
 App::App()
     : window{WIDTH, HEIGHT, "Kevin Craft"},
-      shader{"assets/shaders/vert.glsl", "assets/shaders/frag.glsl"},
-      chunk{0, 0, 0}, camera{}
+      shader{"assets/shaders/vert.glsl", "assets/shaders/frag.glsl"}, camera{}
 {
-        chunk.generate_mesh();
-
         glfwSetInputMode(window.get_glfw_window(), GLFW_CURSOR,
                          GLFW_CURSOR_DISABLED);
 
@@ -50,9 +46,6 @@ void App::run()
                 shader.use();
                 // Update Uniforms
                 shader.uniform_m4("mvp", &vp[0][0]);
-                shader.uniform_v3("world_pos", &chunk.position[0]);
-
-                chunk.vertex_array.draw();
 
                 // RENDER
                 glfwSwapBuffers(window.get_glfw_window());

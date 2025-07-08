@@ -2,7 +2,6 @@
 #define APP_HPP
 
 #include "window.hpp"
-#include "chunk.hpp"
 #include "shader.hpp"
 #include "camera.hpp"
 #include <glm/glm.hpp>
@@ -23,7 +22,6 @@ public:
 private:
         Window window;
         Shader shader;
-        Chunk chunk;
         Camera camera;
 
         void handle_keyboard();
@@ -31,4 +29,4 @@ private:
 };
 } // namespace kwnc
 
-#endif // 1APP_HPP
+#endif // !APP_HPP
