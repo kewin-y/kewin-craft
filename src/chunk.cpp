@@ -13,64 +13,34 @@
 
 // clang-format off
 
-// Negative Z (NZ)
-static const u_int8_t face_nz[][3] = {
-        {0, 0, 0},
-        {1, 0, 0},
-        {1, 1, 0},
-        {1, 1, 0},
-        {0, 1, 0},
-        {0, 0, 0}
+static const uint8_t face_ny[][3] = {
+    {0, 0, 0}, {1, 0, 0}, {1, 0, 1},
+    {0, 0, 0}, {1, 0, 1}, {0, 0, 1},
 };
 
-// Positive Z (PZ)
-static const u_int8_t face_pz[][3] = {
-        {0, 0, 1},
-        {1, 0, 1},
-        {1, 1, 1},
-        {1, 1, 1},
-        {0, 1, 1},
-        {0, 0, 1}
+static const uint8_t face_py[][3] = {
+    {0, 1, 0}, {1, 1, 1}, {1, 1, 0},
+    {0, 1, 0}, {0, 1, 1}, {1, 1, 1},
 };
 
-// Negative X (NX)
-static const u_int8_t face_nx[][3] = {
-        {0, 1, 1},
-        {0, 1, 0},
-        {0, 0, 0},
-        {0, 0, 0},
-        {0, 1, 1},
-        {0, 0, 1}
+static const uint8_t face_nz[][3] = {
+    {0, 0, 0}, {1, 1, 0}, {1, 0, 0},
+    {0, 0, 0}, {0, 1, 0}, {1, 1, 0},
 };
 
-// Positive X (PX)
-static const u_int8_t face_px[][3] = {
-        {1, 1, 1},
-        {1, 1, 0},
-        {1, 0, 0},
-        {1, 0, 0},
-        {1, 0, 1},
-        {1, 1, 1}
+static const uint8_t face_pz[][3] = {
+    {0, 0, 1}, {1, 0, 1}, {1, 1, 1},
+    {0, 0, 1}, {1, 1, 1}, {0, 1, 1},
 };
 
-// Negative Y (NY)
-static const u_int8_t face_ny[][3] = {
-        {0, 0, 0},
-        {1, 0, 0},
-        {1, 0, 1},
-        {1, 0, 1},
-        {0, 0, 1},
-        {0, 0, 0}
+static const uint8_t face_nx[][3] = {
+    {0, 0, 0}, {0, 0, 1}, {0, 1, 1},
+    {0, 0, 0}, {0, 1, 1}, {0, 1, 0},
 };
 
-// Positive Y (PY)
-static const u_int8_t face_py[][3] ={
-        {0, 1, 0},
-        {1, 1, 0},
-        {1, 1, 1},
-        {1, 1, 1},
-        {0, 1, 1},
-        {0, 1, 0}
+static const uint8_t face_px[][3] = {
+    {1, 0, 0}, {1, 1, 1}, {1, 0, 1},
+    {1, 0, 0}, {1, 1, 0}, {1, 1, 1},
 };
 // clang-format on
 
