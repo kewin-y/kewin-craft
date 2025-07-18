@@ -4,6 +4,7 @@
 #include "window.hpp"
 #include "shader.hpp"
 #include "camera.hpp"
+#include "map.hpp"
 #include <glm/glm.hpp>
 
 namespace kwnc
@@ -23,6 +24,7 @@ private:
         Window window;
         Shader shader;
         Camera camera;
+        Map map;
 
         void handle_keyboard();
         glm::mat4 get_view_projection();

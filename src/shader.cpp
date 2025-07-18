@@ -43,13 +43,13 @@ unsigned int Shader::get_id() { return id; }
 
 void Shader::use() { glUseProgram(id); }
 
-void Shader::uniform_m4(const std::string &name, float *mat)
+void Shader::uniform_m4(const std::string &name, float *mat) const
 {
         glUniformMatrix4fv(glGetUniformLocation(id, name.c_str()), 1, GL_FALSE,
                            mat);
 }
 
-void Shader::uniform_v3(const std::string &name, float *vec)
+void Shader::uniform_v3(const std::string &name, float *vec) const
 {
         glUniform3fv(glGetUniformLocation(id, name.c_str()), 1, vec);
 }

@@ -9,15 +9,15 @@ namespace kwnc
 class Camera
 {
 public:
-        glm::vec3 position{0.0f, 50.0f, 50.0f};
+        glm::vec3 position{0.0f, 64.0f, 0.0f};
         glm::vec3 direction{0.0f, 0.0f, -0.1f};
-        glm::vec3 target{0.0f, 50.0f, 49.9f};
+        glm::vec3 target{0.0f, 64.0f, 0.1f};
 
         // NOTE: Given that this game is Minecraft clone, there
         // should be no reason why this vector changes
         const glm::vec3 up{0.0f, 1.0f, 0.0f};
 
-        const float FOV = 45.0f;
+        const float FOV = 70.0f;
         const float sensitivity = 0.2f;
         const float speed = 5.5f;
 

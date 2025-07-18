@@ -15,19 +15,26 @@ public:
         static constexpr int CHUNK_SIZE_CUBED =
             CHUNK_SIZE * CHUNK_SIZE * CHUNK_SIZE;
 
-        glm::vec3 position;
+        int chunk_x, chunk_y, chunk_z;
         Block_Vertex_Array vertex_array;
 
         Chunk(int x, int y, int z);
         ~Chunk();
 
+        bool is_empty();
+        bool is_dirty();
+
+        void add_voxel(int x, int y, int z, Block type);
+        void fill();
+        void reset();
         void generate_mesh();
 
 private:
-        Block *blocks;
+        Block *blocks = nullptr;
+        bool dirty = false;
 
-        int chunk_pos_to_idx(int x, int y, int z);
-        void idx_to_chunk_pos(int i, int *x, int *y, int *z);
+        static int convert_to_block_idx(int x, int y, int z);
+        static void convert_to_pos_in_chunk(int i, int *x, int *y, int *z);
 };
 } // namespace kwnc
 

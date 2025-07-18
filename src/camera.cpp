@@ -4,7 +4,6 @@
 #include <cmath>
 #include <glm/ext/vector_float3.hpp>
 #include <glm/geometric.hpp>
-#include <glm/glm.hpp>
 #include <glm/trigonometric.hpp>
 
 namespace kwnc
