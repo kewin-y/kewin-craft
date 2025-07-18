@@ -12,7 +12,8 @@ public:
         Texture(const std::string &path);
         ~Texture();
 
-        unsigned int get_id();
+        uint get_id();
+        void bind();
 
 private:
         unsigned int id;
@@ -20,7 +21,7 @@ private:
         int height;
         int channels;
 
-        GLenum get_texture_format(int channels);
+        static GLenum get_texture_format(int channels);
 };
 } // namespace kwnc
 

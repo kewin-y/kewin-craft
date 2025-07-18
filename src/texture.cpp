@@ -28,7 +28,9 @@ Texture::Texture(const std::string &path)
         glGenerateMipmap(GL_TEXTURE_2D);
 }
 
-unsigned int Texture::get_id() { return id; }
+Texture::~Texture() {}
+uint Texture::get_id() { return id; }
+void Texture::bind() { glBindTexture(GL_TEXTURE_2D, id); }
 
 GLenum Texture::get_texture_format(int num_channels)
 {

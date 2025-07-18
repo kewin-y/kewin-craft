@@ -1,6 +1,7 @@
 #ifndef APP_HPP
 #define APP_HPP
 
+#include "texture.hpp"
 #include "window.hpp"
 #include "shader.hpp"
 #include "camera.hpp"
@@ -23,6 +24,7 @@ public:
 private:
         Window window;
         Shader shader;
+        Texture texture;
         Camera camera;
         Map map;
 

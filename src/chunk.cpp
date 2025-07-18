@@ -1,115 +1,11 @@
 #include "chunk.hpp"
 #include "block.hpp"
 #include "block_vertex_array.hpp"
-#include "glad/gl.h"
-#include <cstddef>
-#include <cstdlib>
-#include <glm/ext/vector_float3.hpp>
+#include <glm/fwd.hpp>
 #include <glm/glm.hpp>
-#include <iostream>
 #include <sys/types.h>
 
-// I promise I'll make this code better
-
-// clang-format off
-
-static const uint8_t face_ny[][3] = {
-    {0, 0, 0}, {1, 0, 0}, {1, 0, 1},
-    {0, 0, 0}, {1, 0, 1}, {0, 0, 1},
-};
-
-static const uint8_t face_py[][3] = {
-    {0, 1, 0}, {1, 1, 1}, {1, 1, 0},
-    {0, 1, 0}, {0, 1, 1}, {1, 1, 1},
-};
-
-static const uint8_t face_nz[][3] = {
-    {0, 0, 0}, {1, 1, 0}, {1, 0, 0},
-    {0, 0, 0}, {0, 1, 0}, {1, 1, 0},
-};
-
-static const uint8_t face_pz[][3] = {
-    {0, 0, 1}, {1, 0, 1}, {1, 1, 1},
-    {0, 0, 1}, {1, 1, 1}, {0, 1, 1},
-};
-
-static const uint8_t face_nx[][3] = {
-    {0, 0, 0}, {0, 0, 1}, {0, 1, 1},
-    {0, 0, 0}, {0, 1, 1}, {0, 1, 0},
-};
-
-static const uint8_t face_px[][3] = {
-    {1, 0, 0}, {1, 1, 1}, {1, 0, 1},
-    {1, 0, 0}, {1, 1, 0}, {1, 1, 1},
-};
-// clang-format on
-
-// clang-format off
-static const glm::vec3 normals_nz[] = {
-        {0.0f,  0.0f,  -1.0f},
-        {0.0f,  0.0f,  -1.0f},
-        {0.0f,  0.0f,  -1.0f},
-        {0.0f,  0.0f,  -1.0f},
-        {0.0f,  0.0f,  -1.0f},
-        {0.0f,  0.0f,  -1.0f},
-};
-
-static const glm::vec3 normals_pz[] = {
-        {0.0f,  0.0f,   1.0f},
-        {0.0f,  0.0f,   1.0f},
-        {0.0f,  0.0f,   1.0f},
-        {0.0f,  0.0f,   1.0f},
-        {0.0f,  0.0f,   1.0f},
-        {0.0f,  0.0f,   1.0f},
-};
-
-static const glm::vec3 normals_nx[] = {
-        {-1.0f,  0.0f,  0.0f},
-        {-1.0f,  0.0f,  0.0f},
-        {-1.0f,  0.0f,  0.0f},
-        {-1.0f,  0.0f,  0.0f},
-        {-1.0f,  0.0f,  0.0f},
-        {-1.0f,  0.0f,  0.0f},
-};
-
-static const glm::vec3 normals_px[] = {
-        {1.0f,  0.0f,  0.0f},
-        {1.0f,  0.0f,  0.0f},
-        {1.0f,  0.0f,  0.0f},
-        {1.0f,  0.0f,  0.0f},
-        {1.0f,  0.0f,  0.0f},
-        {1.0f,  0.0f,  0.0f},
-};
-
-static const glm::vec3 normals_ny[] = {
-        {0.0f, -1.0f,  0.0f},
-        {0.0f, -1.0f,  0.0f},
-        {0.0f, -1.0f,  0.0f},
-        {0.0f, -1.0f,  0.0f},
-        {0.0f, -1.0f,  0.0f},
-        {0.0f, -1.0f,  0.0f},
-};
-
-static const glm::vec3 normals_py[] = {
-        {0.0f,  1.0f,  0.0f},
-        {0.0f,  1.0f,  0.0f},
-        {0.0f,  1.0f,  0.0f},
-        {0.0f,  1.0f,  0.0f},
-        {0.0f,  1.0f,  0.0f},
-        {0.0f,  1.0f,  0.0f}
-};
-// clang-format on
-
-// clang-format off
-static const glm::vec2 uvs[]  ={
-        {0.0f, 0.0f},
-        {1.0f, 0.0f},
-        {1.0f, 1.0f},
-        {1.0f, 1.0f},
-        {0.0f, 1.0f},
-        {0.0f, 0.0f}
-};
-// clang-format on
+// TODO: Redo the vertices stop being lazy pls
 
 namespace kwnc
 {
@@ -187,17 +83,18 @@ void Chunk::generate_mesh()
                 if (blocks[i] == Block::AIR)
                         continue;
 
+                auto block_type = static_cast<u_int8_t>(blocks[i]);
+
                 // Negative Z
                 if (z - 1 < 0 ||
                     blocks[convert_to_block_idx(x, y, z - 1)] == Block::AIR) {
                         for (int j = 0; j < 6; ++j) {
                                 current->normal = normals_nz[j];
-                                current->uv = uvs[j];
+                                current->uv = get_uv(block_type, uvs[j]);
                                 current->packed_coord_type =
                                     ((face_nz[j][0] + x) << 24u) |
                                     ((face_nz[j][1] + y) << 16u) |
-                                    ((face_nz[j][2] + z) << 8u) |
-                                    static_cast<u_int8_t>(blocks[i]);
+                                    ((face_nz[j][2] + z) << 8u) | block_type;
                                 current++;
                         }
                 }
@@ -206,12 +103,11 @@ void Chunk::generate_mesh()
                     blocks[convert_to_block_idx(x, y, z + 1)] == Block::AIR) {
                         for (int j = 0; j < 6; ++j) {
                                 current->normal = normals_pz[j];
-                                current->uv = uvs[j];
+                                current->uv = get_uv(block_type, uvs[j]);
                                 current->packed_coord_type =
                                     ((face_pz[j][0] + x) << 24u) |
                                     ((face_pz[j][1] + y) << 16u) |
-                                    ((face_pz[j][2] + z) << 8u) |
-                                    static_cast<u_int8_t>(blocks[i]);
+                                    ((face_pz[j][2] + z) << 8u) | block_type;
                                 current++;
                         }
                 }
@@ -220,12 +116,11 @@ void Chunk::generate_mesh()
                     blocks[convert_to_block_idx(x - 1, y, z)] == Block::AIR) {
                         for (int j = 0; j < 6; ++j) {
                                 current->normal = normals_nx[j];
-                                current->uv = uvs[j];
+                                current->uv = get_uv(block_type, uvs[j]);
                                 current->packed_coord_type =
                                     ((face_nx[j][0] + x) << 24u) |
                                     ((face_nx[j][1] + y) << 16u) |
-                                    ((face_nx[j][2] + z) << 8u) |
-                                    static_cast<u_int8_t>(blocks[i]);
+                                    ((face_nx[j][2] + z) << 8u) | block_type;
                                 current++;
                         }
                 }
@@ -234,12 +129,11 @@ void Chunk::generate_mesh()
                     blocks[convert_to_block_idx(x + 1, y, z)] == Block::AIR) {
                         for (int j = 0; j < 6; ++j) {
                                 current->normal = normals_px[j];
-                                current->uv = uvs[j];
+                                current->uv = get_uv(block_type, uvs[j]);
                                 current->packed_coord_type =
                                     ((face_px[j][0] + x) << 24u) |
                                     ((face_px[j][1] + y) << 16u) |
-                                    ((face_px[j][2] + z) << 8u) |
-                                    static_cast<u_int8_t>(blocks[i]);
+                                    ((face_px[j][2] + z) << 8u) | block_type;
                                 current++;
                         }
                 }
@@ -248,12 +142,11 @@ void Chunk::generate_mesh()
                     blocks[convert_to_block_idx(x, y - 1, z)] == Block::AIR) {
                         for (int j = 0; j < 6; ++j) {
                                 current->normal = normals_ny[j];
-                                current->uv = uvs[j];
+                                current->uv = get_uv(block_type, uvs[j]);
                                 current->packed_coord_type =
                                     ((face_ny[j][0] + x) << 24u) |
                                     ((face_ny[j][1] + y) << 16u) |
-                                    ((face_ny[j][2] + z) << 8u) |
-                                    static_cast<u_int8_t>(blocks[i]);
+                                    ((face_ny[j][2] + z) << 8u) | block_type;
                                 current++;
                         }
                 }
@@ -262,12 +155,11 @@ void Chunk::generate_mesh()
                     blocks[convert_to_block_idx(x, y + 1, z)] == Block::AIR) {
                         for (int j = 0; j < 6; ++j) {
                                 current->normal = normals_py[j];
-                                current->uv = uvs[j];
+                                current->uv = get_uv(block_type, uvs[j]);
                                 current->packed_coord_type =
                                     ((face_py[j][0] + x) << 24u) |
                                     ((face_py[j][1] + y) << 16u) |
-                                    ((face_py[j][2] + z) << 8u) |
-                                    static_cast<u_int8_t>(blocks[i]);
+                                    ((face_py[j][2] + z) << 8u) | block_type;
                                 current++;
                         }
                 }
@@ -276,7 +168,7 @@ void Chunk::generate_mesh()
         vertex_count = current - vertex_data;
         size = vertex_count * sizeof(Block_Vertex);
         vertex_array.buffer_data(size, vertex_count, vertex_data);
-        std::cout << "There are: " << current - vertex_data << " vertices\n";
+        // std::cout << "There are: " << current - vertex_data << " vertices\n";
 
         dirty = false;
         delete[] vertex_data;
@@ -293,5 +185,16 @@ void Chunk::convert_to_pos_in_chunk(int i, u_int8_t *x, u_int8_t *y,
         *z = i % CHUNK_SIZE;
         *y = (i % CHUNK_SIZE_SQUARED) / CHUNK_SIZE;
         *x = (i % CHUNK_SIZE_CUBED) / CHUNK_SIZE_SQUARED;
+}
+glm::vec2 Chunk::get_uv(u_int8_t type, const glm::vec2 &local_uv)
+{
+        // Adjust for Air having index 0
+        type--;
+
+        float tile_size = 1.0f / 16.0f;
+        u_int8_t tile_x = type % 16;
+        u_int8_t tile_y = type / 16;
+        return glm::vec2(tile_size * (tile_x + local_uv.x),
+                         tile_size * (tile_y + local_uv.y));
 }
 } // namespace kwnc

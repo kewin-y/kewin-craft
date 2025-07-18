@@ -36,6 +36,7 @@ private:
 
         static int convert_to_block_idx(u_int8_t x, u_int8_t y, u_int8_t z);
         static void convert_to_pos_in_chunk(int i, u_int8_t *x, u_int8_t *y, u_int8_t *z);
+        static glm::vec2 get_uv(u_int8_t type, const glm::vec2 &local_uv);
 };
 } // namespace kwnc
 

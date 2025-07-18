@@ -32,5 +32,3 @@ test: $(BIN_DIR)/$(EXEC)
 .PHONY: clean
 clean:
 	rm -rf $(OBJ_DIR) $(BIN_DIR)
-
-
