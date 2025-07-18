@@ -56,6 +56,7 @@ void App::run()
                 }
 
                 std::cout << "FPS: " << fps << "\n";
+                // std::cout << "Camera Position: " << glm::to_string(camera.position)<< "\n";
 
                 // Update game objects
                 handle_keyboard();

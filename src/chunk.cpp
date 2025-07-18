@@ -3,128 +3,141 @@
 #include "block_vertex_array.hpp"
 #include "glad/gl.h"
 #include <cstddef>
+#include <cstdlib>
 #include <glm/ext/vector_float3.hpp>
 #include <glm/glm.hpp>
 #include <iostream>
+#include <sys/types.h>
 
 // I promise I'll make this code better
 
 // clang-format off
-static glm::vec3 face_nz[] = {
-        // Negative Z (NZ)
-        glm::vec3{-1.0f, -1.0f, -1.0f},
-        glm::vec3{ 1.0f, -1.0f, -1.0f},
-        glm::vec3{ 1.0f,  1.0f, -1.0f},
-        glm::vec3{ 1.0f,  1.0f, -1.0f},
-        glm::vec3{-1.0f,  1.0f, -1.0f},
-        glm::vec3{-1.0f, -1.0f, -1.0f},
+
+// Negative Z (NZ)
+static const u_int8_t face_nz[][3] = {
+        {0, 0, 0},
+        {1, 0, 0},
+        {1, 1, 0},
+        {1, 1, 0},
+        {0, 1, 0},
+        {0, 0, 0}
 };
 
-static glm::vec3 face_pz[] = {
-        // Positive Z (PZ)
-        glm::vec3{-1.0f, -1.0f,  1.0f},
-        glm::vec3{ 1.0f, -1.0f,  1.0f},
-        glm::vec3{ 1.0f,  1.0f,  1.0f},
-        glm::vec3{ 1.0f,  1.0f,  1.0f},
-        glm::vec3{-1.0f,  1.0f,  1.0f},
-        glm::vec3{-1.0f, -1.0f,  1.0f},
+// Positive Z (PZ)
+static const u_int8_t face_pz[][3] = {
+        {0, 0, 1},
+        {1, 0, 1},
+        {1, 1, 1},
+        {1, 1, 1},
+        {0, 1, 1},
+        {0, 0, 1}
 };
 
-static glm::vec3 face_nx[] = {
-        // Negative X (NX)
-        glm::vec3{-1.0f,  1.0f,  1.0f},
-        glm::vec3{-1.0f,  1.0f, -1.0f},
-        glm::vec3{-1.0f, -1.0f, -1.0f},
-        glm::vec3{-1.0f, -1.0f, -1.0f},
-        glm::vec3{-1.0f, -1.0f,  1.0f},
-        glm::vec3{-1.0f,  1.0f,  1.0f},
+// Negative X (NX)
+static const u_int8_t face_nx[][3] = {
+        {0, 1, 1},
+        {0, 1, 0},
+        {0, 0, 0},
+        {0, 0, 0},
+        {0, 1, 1},
+        {0, 0, 1}
 };
 
-static glm::vec3 face_px[] = {
-        // Positive X (PX)
-        glm::vec3{ 1.0f,  1.0f,  1.0f},
-        glm::vec3{ 1.0f,  1.0f, -1.0f},
-        glm::vec3{ 1.0f, -1.0f, -1.0f},
-        glm::vec3{ 1.0f, -1.0f, -1.0f},
-        glm::vec3{ 1.0f, -1.0f,  1.0f},
-        glm::vec3{ 1.0f,  1.0f,  1.0f},
-
+// Positive X (PX)
+static const u_int8_t face_px[][3] = {
+        {1, 1, 1},
+        {1, 1, 0},
+        {1, 0, 0},
+        {1, 0, 0},
+        {1, 0, 1},
+        {1, 1, 1}
 };
 
-static glm::vec3 face_ny[] = {
-        // Negative Y (NY)
-        glm::vec3{-1.0f, -1.0f, -1.0f},
-        glm::vec3{ 1.0f, -1.0f, -1.0f},
-        glm::vec3{ 1.0f, -1.0f,  1.0f},
-        glm::vec3{ 1.0f, -1.0f,  1.0f},
-        glm::vec3{-1.0f, -1.0f,  1.0f},
-        glm::vec3{-1.0f, -1.0f, -1.0f},
+// Negative Y (NY)
+static const u_int8_t face_ny[][3] = {
+        {0, 0, 0},
+        {1, 0, 0},
+        {1, 0, 1},
+        {1, 0, 1},
+        {0, 0, 1},
+        {0, 0, 0}
 };
 
-static glm::vec3 face_py[] ={
-        // Positive Y (PY)
-        glm::vec3{-1.0f,  1.0f, -1.0f},
-        glm::vec3{ 1.0f,  1.0f, -1.0f},
-        glm::vec3{ 1.0f,  1.0f,  1.0f},
-        glm::vec3{ 1.0f,  1.0f,  1.0f},
-        glm::vec3{-1.0f,  1.0f,  1.0f},
-        glm::vec3{-1.0f,  1.0f, -1.0f}
+// Positive Y (PY)
+static const u_int8_t face_py[][3] ={
+        {0, 1, 0},
+        {1, 1, 0},
+        {1, 1, 1},
+        {1, 1, 1},
+        {0, 1, 1},
+        {0, 1, 0}
 };
 // clang-format on
 
 // clang-format off
-static glm::vec3 normals_nz[] = {
-        glm::vec3{0.0f,  0.0f,  -1.0f},
-        glm::vec3{0.0f,  0.0f,  -1.0f},
-        glm::vec3{0.0f,  0.0f,  -1.0f},
-        glm::vec3{0.0f,  0.0f,  -1.0f},
-        glm::vec3{0.0f,  0.0f,  -1.0f},
-        glm::vec3{0.0f,  0.0f,  -1.0f},
+static const glm::vec3 normals_nz[] = {
+        {0.0f,  0.0f,  -1.0f},
+        {0.0f,  0.0f,  -1.0f},
+        {0.0f,  0.0f,  -1.0f},
+        {0.0f,  0.0f,  -1.0f},
+        {0.0f,  0.0f,  -1.0f},
+        {0.0f,  0.0f,  -1.0f},
 };
 
-static glm::vec3 normals_pz[] = {
-        glm::vec3{0.0f,  0.0f,   1.0f},
-        glm::vec3{0.0f,  0.0f,   1.0f},
-        glm::vec3{0.0f,  0.0f,   1.0f},
-        glm::vec3{0.0f,  0.0f,   1.0f},
-        glm::vec3{0.0f,  0.0f,   1.0f},
-        glm::vec3{0.0f,  0.0f,   1.0f},
+static const glm::vec3 normals_pz[] = {
+        {0.0f,  0.0f,   1.0f},
+        {0.0f,  0.0f,   1.0f},
+        {0.0f,  0.0f,   1.0f},
+        {0.0f,  0.0f,   1.0f},
+        {0.0f,  0.0f,   1.0f},
+        {0.0f,  0.0f,   1.0f},
 };
 
-static glm::vec3 normals_nx[] = {
-        glm::vec3{-1.0f,  0.0f,  0.0f},
-        glm::vec3{-1.0f,  0.0f,  0.0f},
-        glm::vec3{-1.0f,  0.0f,  0.0f},
-        glm::vec3{-1.0f,  0.0f,  0.0f},
-        glm::vec3{-1.0f,  0.0f,  0.0f},
-        glm::vec3{-1.0f,  0.0f,  0.0f},
+static const glm::vec3 normals_nx[] = {
+        {-1.0f,  0.0f,  0.0f},
+        {-1.0f,  0.0f,  0.0f},
+        {-1.0f,  0.0f,  0.0f},
+        {-1.0f,  0.0f,  0.0f},
+        {-1.0f,  0.0f,  0.0f},
+        {-1.0f,  0.0f,  0.0f},
 };
 
-static glm::vec3 normals_px[] = {
-        glm::vec3{1.0f,  0.0f,  0.0f},
-        glm::vec3{1.0f,  0.0f,  0.0f},
-        glm::vec3{1.0f,  0.0f,  0.0f},
-        glm::vec3{1.0f,  0.0f,  0.0f},
-        glm::vec3{1.0f,  0.0f,  0.0f},
-        glm::vec3{1.0f,  0.0f,  0.0f},
+static const glm::vec3 normals_px[] = {
+        {1.0f,  0.0f,  0.0f},
+        {1.0f,  0.0f,  0.0f},
+        {1.0f,  0.0f,  0.0f},
+        {1.0f,  0.0f,  0.0f},
+        {1.0f,  0.0f,  0.0f},
+        {1.0f,  0.0f,  0.0f},
 };
 
-static glm::vec3 normals_ny[] = {
-        glm::vec3{0.0f, -1.0f,  0.0f},
-        glm::vec3{0.0f, -1.0f,  0.0f},
-        glm::vec3{0.0f, -1.0f,  0.0f},
-        glm::vec3{0.0f, -1.0f,  0.0f},
-        glm::vec3{0.0f, -1.0f,  0.0f},
-        glm::vec3{0.0f, -1.0f,  0.0f},
+static const glm::vec3 normals_ny[] = {
+        {0.0f, -1.0f,  0.0f},
+        {0.0f, -1.0f,  0.0f},
+        {0.0f, -1.0f,  0.0f},
+        {0.0f, -1.0f,  0.0f},
+        {0.0f, -1.0f,  0.0f},
+        {0.0f, -1.0f,  0.0f},
 };
 
-static glm::vec3 normals_py[] = {
-        glm::vec3{0.0f,  1.0f,  0.0f},
-        glm::vec3{0.0f,  1.0f,  0.0f},
-        glm::vec3{0.0f,  1.0f,  0.0f},
-        glm::vec3{0.0f,  1.0f,  0.0f},
-        glm::vec3{0.0f,  1.0f,  0.0f},
-        glm::vec3{0.0f,  1.0f,  0.0f}
+static const glm::vec3 normals_py[] = {
+        {0.0f,  1.0f,  0.0f},
+        {0.0f,  1.0f,  0.0f},
+        {0.0f,  1.0f,  0.0f},
+        {0.0f,  1.0f,  0.0f},
+        {0.0f,  1.0f,  0.0f},
+        {0.0f,  1.0f,  0.0f}
+};
+// clang-format on
+
+// clang-format off
+static const glm::vec2 uvs[]  ={
+        {0.0f, 0.0f},
+        {1.0f, 0.0f},
+        {1.0f, 1.0f},
+        {1.0f, 1.0f},
+        {0.0f, 1.0f},
+        {0.0f, 0.0f}
 };
 // clang-format on
 
@@ -164,6 +177,7 @@ void Chunk::add_voxel(int x, int y, int z, Block type)
 
 void Chunk::fill()
 {
+
         if (nullptr == blocks) {
                 blocks = new Block[CHUNK_SIZE_CUBED];
         }
@@ -194,8 +208,8 @@ void Chunk::generate_mesh()
         Block_Vertex *vertex_data = new Block_Vertex[36 * CHUNK_SIZE_CUBED];
         Block_Vertex *current = vertex_data;
 
-        int x, y, z, vertex_count;
-        size_t size;
+        u_int8_t x, y, z;
+        size_t vertex_count, size;
 
         for (int i = 0; i < CHUNK_SIZE_CUBED; ++i) {
                 convert_to_pos_in_chunk(i, &x, &y, &z);
@@ -207,11 +221,13 @@ void Chunk::generate_mesh()
                 if (z - 1 < 0 ||
                     blocks[convert_to_block_idx(x, y, z - 1)] == Block::AIR) {
                         for (int j = 0; j < 6; ++j) {
-                                current->position =
-                                    face_nz[j] + glm::vec3{x, y, z};
                                 current->normal = normals_nz[j];
-                                current->block_type =
-                                    static_cast<int>(blocks[i]);
+                                current->uv = uvs[j];
+                                current->packed_coord_type =
+                                    ((face_nz[j][0] + x) << 24u) |
+                                    ((face_nz[j][1] + y) << 16u) |
+                                    ((face_nz[j][2] + z) << 8u) |
+                                    static_cast<u_int8_t>(blocks[i]);
                                 current++;
                         }
                 }
@@ -219,11 +235,13 @@ void Chunk::generate_mesh()
                 if (z + 1 > 31 ||
                     blocks[convert_to_block_idx(x, y, z + 1)] == Block::AIR) {
                         for (int j = 0; j < 6; ++j) {
-                                current->position =
-                                    face_pz[j] + glm::vec3{x, y, z};
                                 current->normal = normals_pz[j];
-                                current->block_type =
-                                    static_cast<int>(blocks[i]);
+                                current->uv = uvs[j];
+                                current->packed_coord_type =
+                                    ((face_pz[j][0] + x) << 24u) |
+                                    ((face_pz[j][1] + y) << 16u) |
+                                    ((face_pz[j][2] + z) << 8u) |
+                                    static_cast<u_int8_t>(blocks[i]);
                                 current++;
                         }
                 }
@@ -231,11 +249,13 @@ void Chunk::generate_mesh()
                 if (x - 1 < 0 ||
                     blocks[convert_to_block_idx(x - 1, y, z)] == Block::AIR) {
                         for (int j = 0; j < 6; ++j) {
-                                current->position =
-                                    face_nx[j] + glm::vec3{x, y, z};
                                 current->normal = normals_nx[j];
-                                current->block_type =
-                                    static_cast<int>(blocks[i]);
+                                current->uv = uvs[j];
+                                current->packed_coord_type =
+                                    ((face_nx[j][0] + x) << 24u) |
+                                    ((face_nx[j][1] + y) << 16u) |
+                                    ((face_nx[j][2] + z) << 8u) |
+                                    static_cast<u_int8_t>(blocks[i]);
                                 current++;
                         }
                 }
@@ -243,11 +263,13 @@ void Chunk::generate_mesh()
                 if (x - 1 > 31 ||
                     blocks[convert_to_block_idx(x + 1, y, z)] == Block::AIR) {
                         for (int j = 0; j < 6; ++j) {
-                                current->position =
-                                    face_px[j] + glm::vec3{x, y, z};
                                 current->normal = normals_px[j];
-                                current->block_type =
-                                    static_cast<int>(blocks[i]);
+                                current->uv = uvs[j];
+                                current->packed_coord_type =
+                                    ((face_px[j][0] + x) << 24u) |
+                                    ((face_px[j][1] + y) << 16u) |
+                                    ((face_px[j][2] + z) << 8u) |
+                                    static_cast<u_int8_t>(blocks[i]);
                                 current++;
                         }
                 }
@@ -255,11 +277,13 @@ void Chunk::generate_mesh()
                 if (y - 1 < 0 ||
                     blocks[convert_to_block_idx(x, y - 1, z)] == Block::AIR) {
                         for (int j = 0; j < 6; ++j) {
-                                current->position =
-                                    face_ny[j] + glm::vec3{x, y, z};
                                 current->normal = normals_ny[j];
-                                current->block_type =
-                                    static_cast<int>(blocks[i]);
+                                current->uv = uvs[j];
+                                current->packed_coord_type =
+                                    ((face_ny[j][0] + x) << 24u) |
+                                    ((face_ny[j][1] + y) << 16u) |
+                                    ((face_ny[j][2] + z) << 8u) |
+                                    static_cast<u_int8_t>(blocks[i]);
                                 current++;
                         }
                 }
@@ -267,11 +291,13 @@ void Chunk::generate_mesh()
                 if (y + 1 > 31 ||
                     blocks[convert_to_block_idx(x, y + 1, z)] == Block::AIR) {
                         for (int j = 0; j < 6; ++j) {
-                                current->position =
-                                    face_py[j] + glm::vec3{x, y, z};
                                 current->normal = normals_py[j];
-                                current->block_type =
-                                    static_cast<int>(blocks[i]);
+                                current->uv = uvs[j];
+                                current->packed_coord_type =
+                                    ((face_py[j][0] + x) << 24u) |
+                                    ((face_py[j][1] + y) << 16u) |
+                                    ((face_py[j][2] + z) << 8u) |
+                                    static_cast<u_int8_t>(blocks[i]);
                                 current++;
                         }
                 }
@@ -286,12 +312,13 @@ void Chunk::generate_mesh()
         delete[] vertex_data;
 }
 
-int Chunk::convert_to_block_idx(int x, int y, int z)
+int Chunk::convert_to_block_idx(u_int8_t x, u_int8_t y, u_int8_t z)
 {
         return z + y * CHUNK_SIZE + x * CHUNK_SIZE_SQUARED;
 }
 
-void Chunk::convert_to_pos_in_chunk(int i, int *x, int *y, int *z)
+void Chunk::convert_to_pos_in_chunk(int i, u_int8_t *x, u_int8_t *y,
+                                    u_int8_t *z)
 {
         *z = i % CHUNK_SIZE;
         *y = (i % CHUNK_SIZE_SQUARED) / CHUNK_SIZE;

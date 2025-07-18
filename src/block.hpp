@@ -2,16 +2,17 @@
 #define BLOCK_HPP
 
 #include <glm/vec3.hpp>
+#include <glm/vec2.hpp>
 #include <sys/types.h>
 
 namespace kwnc
 {
-enum class Block : u_int16_t { AIR, DIRT, STONE };
+enum class Block : u_int8_t { AIR, DIRT, STONE };
 
 struct Block_Vertex {
-        glm::vec3 position; // Represents chunk coordinates
-        glm::vec3 normal;
-        int block_type;
+        glm::vec3 normal;       // 12 Bytes
+        glm::vec2 uv;           // 8 Bytes
+        uint packed_coord_type; // 4 bytes
 };
 }; // namespace kwnc
 
