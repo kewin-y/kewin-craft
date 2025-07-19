@@ -58,7 +58,7 @@ void App::run()
                         last_fps_calc = current_time;
                 }
 
-                // std::cout << "FPS: " << fps << "\n";
+                std::cout << "FPS: " << fps << "\n";
                 // std::cout << "Camera Position: " <<
                 // glm::to_string(camera.position)<< "\n";
 

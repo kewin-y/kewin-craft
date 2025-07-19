@@ -3,6 +3,7 @@
 
 #include "block.hpp"
 #include "block_vertex_array.hpp"
+#include <cstdint>
 #include <glm/glm.hpp>
 #include <sys/types.h>
 
@@ -34,9 +35,9 @@ private:
         Block *blocks = nullptr;
         bool dirty = false;
 
-        static int convert_to_block_idx(u_int8_t x, u_int8_t y, u_int8_t z);
-        static void convert_to_pos_in_chunk(int i, u_int8_t *x, u_int8_t *y, u_int8_t *z);
-        static glm::vec2 get_uv(u_int8_t type, const glm::vec2 &local_uv);
+        static int convert_to_block_idx(int x, int y, int z);
+        static void convert_to_pos_in_chunk(int i, int *x, int *y, int *z);
+        static glm::vec2 get_uv(uint8_t type, const glm::vec2 &local_uv);
 };
 } // namespace kwnc
 

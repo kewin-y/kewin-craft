@@ -1,8 +1,10 @@
 #include "chunk.hpp"
 #include "block.hpp"
 #include "block_vertex_array.hpp"
+#include <cstdint>
 #include <glm/fwd.hpp>
 #include <glm/glm.hpp>
+#include <iostream>
 #include <sys/types.h>
 
 // clang-format off
@@ -183,7 +185,7 @@ void Chunk::generate_mesh()
         Block_Vertex *vertex_data = new Block_Vertex[36 * CHUNK_SIZE_CUBED];
         Block_Vertex *current = vertex_data;
 
-        u_int8_t x, y, z;
+        int x, y, z;
         size_t vertex_count, size;
 
         for (int i = 0; i < CHUNK_SIZE_CUBED; ++i) {
@@ -234,7 +236,7 @@ void Chunk::generate_mesh()
                         }
                 }
                 // Positive X
-                if (x - 1 > 31 ||
+                if (x + 1 > 31 ||
                     blocks[convert_to_block_idx(x + 1, y, z)] == Block::AIR) {
                         for (int j = 0; j < 6; ++j) {
                                 current->normal = normals_px[j];
@@ -283,23 +285,19 @@ void Chunk::generate_mesh()
         delete[] vertex_data;
 }
 
-int Chunk::convert_to_block_idx(u_int8_t x, u_int8_t y, u_int8_t z)
+int Chunk::convert_to_block_idx(int x, int y, int z)
 {
         return z + y * CHUNK_SIZE + x * CHUNK_SIZE_SQUARED;
 }
 
-void Chunk::convert_to_pos_in_chunk(int i, u_int8_t *x, u_int8_t *y,
-                                    u_int8_t *z)
+void Chunk::convert_to_pos_in_chunk(int i, int *x, int *y, int *z)
 {
+        *x = i / CHUNK_SIZE_SQUARED;
+        *y = (i / CHUNK_SIZE) % CHUNK_SIZE;
         *z = i % CHUNK_SIZE;
-        *y = (i % CHUNK_SIZE_SQUARED) / CHUNK_SIZE;
-        *x = (i % CHUNK_SIZE_CUBED) / CHUNK_SIZE_SQUARED;
 }
 glm::vec2 Chunk::get_uv(u_int8_t type, const glm::vec2 &local_uv)
 {
-        // Adjust for Air having index 0
-        type--;
-
         float tile_size = 1.0f / 16.0f;
         u_int8_t tile_x = type % 16;
         u_int8_t tile_y = type / 16;

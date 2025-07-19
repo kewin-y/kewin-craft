@@ -7,7 +7,7 @@
 
 namespace kwnc
 {
-enum class Block : u_int8_t { AIR, DIRT, STONE };
+enum class Block : uint8_t { DIRT, STONE, AIR };
 
 struct Block_Vertex {
         glm::vec3 normal;       // 12 Bytes
