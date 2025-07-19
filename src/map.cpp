@@ -40,9 +40,11 @@ void Map::setup(const glm::vec3 camera_position)
                 for (int y = start_y; y < render_diameter + start_y; y++) {
                         for (int x = start_y; x < render_diameter + start_x;
                              x++) {
-                                std::shared_ptr<Chunk> chunk =
-                                    std::make_shared<Chunk>(x, y, z);
-                                chunk->fill();
+                                auto chunk = std::make_shared<Chunk>(x, y, z);
+
+                                if (y <= 1)
+                                        chunk->fill();
+
                                 chunks.insert(
                                     {std::make_tuple(x, y, z), chunk});
                         }

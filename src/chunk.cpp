@@ -1,130 +1,120 @@
 #include "chunk.hpp"
 #include "block.hpp"
 #include "block_vertex_array.hpp"
-#include "glad/gl.h"
-#include <cstddef>
-#include <glm/ext/vector_float3.hpp>
+#include <cstdint>
+#include <glm/fwd.hpp>
 #include <glm/glm.hpp>
 #include <iostream>
-
-// I promise I'll make this code better
-
-// clang-format off
-static glm::vec3 face_nz[] = {
-        // Negative Z (NZ)
-        glm::vec3{-1.0f, -1.0f, -1.0f},
-        glm::vec3{ 1.0f, -1.0f, -1.0f},
-        glm::vec3{ 1.0f,  1.0f, -1.0f},
-        glm::vec3{ 1.0f,  1.0f, -1.0f},
-        glm::vec3{-1.0f,  1.0f, -1.0f},
-        glm::vec3{-1.0f, -1.0f, -1.0f},
-};
-
-static glm::vec3 face_pz[] = {
-        // Positive Z (PZ)
-        glm::vec3{-1.0f, -1.0f,  1.0f},
-        glm::vec3{ 1.0f, -1.0f,  1.0f},
-        glm::vec3{ 1.0f,  1.0f,  1.0f},
-        glm::vec3{ 1.0f,  1.0f,  1.0f},
-        glm::vec3{-1.0f,  1.0f,  1.0f},
-        glm::vec3{-1.0f, -1.0f,  1.0f},
-};
-
-static glm::vec3 face_nx[] = {
-        // Negative X (NX)
-        glm::vec3{-1.0f,  1.0f,  1.0f},
-        glm::vec3{-1.0f,  1.0f, -1.0f},
-        glm::vec3{-1.0f, -1.0f, -1.0f},
-        glm::vec3{-1.0f, -1.0f, -1.0f},
-        glm::vec3{-1.0f, -1.0f,  1.0f},
-        glm::vec3{-1.0f,  1.0f,  1.0f},
-};
-
-static glm::vec3 face_px[] = {
-        // Positive X (PX)
-        glm::vec3{ 1.0f,  1.0f,  1.0f},
-        glm::vec3{ 1.0f,  1.0f, -1.0f},
-        glm::vec3{ 1.0f, -1.0f, -1.0f},
-        glm::vec3{ 1.0f, -1.0f, -1.0f},
-        glm::vec3{ 1.0f, -1.0f,  1.0f},
-        glm::vec3{ 1.0f,  1.0f,  1.0f},
-
-};
-
-static glm::vec3 face_ny[] = {
-        // Negative Y (NY)
-        glm::vec3{-1.0f, -1.0f, -1.0f},
-        glm::vec3{ 1.0f, -1.0f, -1.0f},
-        glm::vec3{ 1.0f, -1.0f,  1.0f},
-        glm::vec3{ 1.0f, -1.0f,  1.0f},
-        glm::vec3{-1.0f, -1.0f,  1.0f},
-        glm::vec3{-1.0f, -1.0f, -1.0f},
-};
-
-static glm::vec3 face_py[] ={
-        // Positive Y (PY)
-        glm::vec3{-1.0f,  1.0f, -1.0f},
-        glm::vec3{ 1.0f,  1.0f, -1.0f},
-        glm::vec3{ 1.0f,  1.0f,  1.0f},
-        glm::vec3{ 1.0f,  1.0f,  1.0f},
-        glm::vec3{-1.0f,  1.0f,  1.0f},
-        glm::vec3{-1.0f,  1.0f, -1.0f}
-};
-// clang-format on
+#include <sys/types.h>
 
 // clang-format off
-static glm::vec3 normals_nz[] = {
-        glm::vec3{0.0f,  0.0f,  -1.0f},
-        glm::vec3{0.0f,  0.0f,  -1.0f},
-        glm::vec3{0.0f,  0.0f,  -1.0f},
-        glm::vec3{0.0f,  0.0f,  -1.0f},
-        glm::vec3{0.0f,  0.0f,  -1.0f},
-        glm::vec3{0.0f,  0.0f,  -1.0f},
+static constexpr uint8_t face_nz[][3] = {
+        {0, 0, 0},
+        {1, 0, 0},
+        {1, 1, 0},
+        {1, 1, 0},
+        {0, 1, 0},
+        {0, 0, 0},
 };
 
-static glm::vec3 normals_pz[] = {
-        glm::vec3{0.0f,  0.0f,   1.0f},
-        glm::vec3{0.0f,  0.0f,   1.0f},
-        glm::vec3{0.0f,  0.0f,   1.0f},
-        glm::vec3{0.0f,  0.0f,   1.0f},
-        glm::vec3{0.0f,  0.0f,   1.0f},
-        glm::vec3{0.0f,  0.0f,   1.0f},
+static constexpr uint8_t face_pz[][3] = {
+        {0, 0, 1},
+        {1, 0, 1},
+        {1, 1, 1},
+        {1, 1, 1},
+        {0, 1, 1},
+        {0, 0, 1},
 };
 
-static glm::vec3 normals_nx[] = {
-        glm::vec3{-1.0f,  0.0f,  0.0f},
-        glm::vec3{-1.0f,  0.0f,  0.0f},
-        glm::vec3{-1.0f,  0.0f,  0.0f},
-        glm::vec3{-1.0f,  0.0f,  0.0f},
-        glm::vec3{-1.0f,  0.0f,  0.0f},
-        glm::vec3{-1.0f,  0.0f,  0.0f},
+static constexpr uint8_t face_nx[][3] = {
+        {0, 1, 1},
+        {0, 1, 0},
+        {0, 0, 0},
+        {0, 0, 0},
+        {0, 0, 1},
+        {0, 1, 1},
+};
+static constexpr uint8_t face_px[][3] = {
+        {1, 1, 1},
+        {1, 1, 0},
+        {1, 0, 0},
+        {1, 0, 0},
+        {1, 0, 1},
+        {1, 1, 1},
+};
+static constexpr uint8_t face_ny[][3] = {
+        {0, 0, 0},
+        {1, 0, 0},
+        {1, 0, 1},
+        {1, 0, 1},
+        {0, 0, 1},
+        {0, 0, 0},
+};
+static constexpr uint8_t face_py[][3] = {
+        {0, 1, 0},
+        {1, 1, 0},
+        {1, 1, 1},
+        {1, 1, 1},
+        {0, 1, 1},
+        {0, 1, 0},
+};
+static constexpr glm::vec3 normals_nz[] = {
+        { 0.0f,  0.0f, -1.0f},
+        { 0.0f,  0.0f, -1.0f},
+        { 0.0f,  0.0f, -1.0f},
+        { 0.0f,  0.0f, -1.0f},
+        { 0.0f,  0.0f, -1.0f},
+        { 0.0f,  0.0f, -1.0f},
 };
 
-static glm::vec3 normals_px[] = {
-        glm::vec3{1.0f,  0.0f,  0.0f},
-        glm::vec3{1.0f,  0.0f,  0.0f},
-        glm::vec3{1.0f,  0.0f,  0.0f},
-        glm::vec3{1.0f,  0.0f,  0.0f},
-        glm::vec3{1.0f,  0.0f,  0.0f},
-        glm::vec3{1.0f,  0.0f,  0.0f},
+static constexpr glm::vec3 normals_pz[] = {
+        { 0.0f,  0.0f,  1.0f},
+        { 0.0f,  0.0f,  1.0f},
+        { 0.0f,  0.0f,  1.0f},
+        { 0.0f,  0.0f,  1.0f},
+        { 0.0f,  0.0f,  1.0f},
+        { 0.0f,  0.0f,  1.0f},
+};
+static constexpr glm::vec3 normals_nx[] = {
+        {-1.0f,  0.0f,  0.0f},
+        {-1.0f,  0.0f,  0.0f},
+        {-1.0f,  0.0f,  0.0f},
+        {-1.0f,  0.0f,  0.0f},
+        {-1.0f,  0.0f,  0.0f},
+        {-1.0f,  0.0f,  0.0f},
+};
+static constexpr glm::vec3 normals_px[] = {
+        { 1.0f,  0.0f,  0.0f},
+        { 1.0f,  0.0f,  0.0f},
+        { 1.0f,  0.0f,  0.0f},
+        { 1.0f,  0.0f,  0.0f},
+        { 1.0f,  0.0f,  0.0f},
+        { 1.0f,  0.0f,  0.0f},
+};
+static constexpr glm::vec3 normals_ny[] = {
+        { 0.0f, -1.0f,  0.0f},
+        { 0.0f, -1.0f,  0.0f},
+        { 0.0f, -1.0f,  0.0f},
+        { 0.0f, -1.0f,  0.0f},
+        { 0.0f, -1.0f,  0.0f},
+        { 0.0f, -1.0f,  0.0f},
+};
+static constexpr glm::vec3 normals_py[] = {
+        { 0.0f,  1.0f,  0.0f},
+        { 0.0f,  1.0f,  0.0f},
+        { 0.0f,  1.0f,  0.0f},
+        { 0.0f,  1.0f,  0.0f},
+        { 0.0f,  1.0f,  0.0f},
+        { 0.0f,  1.0f,  0.0f},
 };
 
-static glm::vec3 normals_ny[] = {
-        glm::vec3{0.0f, -1.0f,  0.0f},
-        glm::vec3{0.0f, -1.0f,  0.0f},
-        glm::vec3{0.0f, -1.0f,  0.0f},
-        glm::vec3{0.0f, -1.0f,  0.0f},
-        glm::vec3{0.0f, -1.0f,  0.0f},
-        glm::vec3{0.0f, -1.0f,  0.0f},
-};
-
-static glm::vec3 normals_py[] = {
-        glm::vec3{0.0f,  1.0f,  0.0f},
-        glm::vec3{0.0f,  1.0f,  0.0f},
-        glm::vec3{0.0f,  1.0f,  0.0f},
-        glm::vec3{0.0f,  1.0f,  0.0f},
-        glm::vec3{0.0f,  1.0f,  0.0f},
-        glm::vec3{0.0f,  1.0f,  0.0f}
+static constexpr glm::vec2 uvs[] = {
+        {0.0f, 1.0f},
+        {1.0f, 1.0f},
+        {1.0f, 0.0f},
+        {1.0f, 0.0f},
+        {0.0f, 0.0f},
+        {0.0f, 1.0f},
 };
 // clang-format on
 
@@ -164,6 +154,7 @@ void Chunk::add_voxel(int x, int y, int z, Block type)
 
 void Chunk::fill()
 {
+
         if (nullptr == blocks) {
                 blocks = new Block[CHUNK_SIZE_CUBED];
         }
@@ -194,8 +185,8 @@ void Chunk::generate_mesh()
         Block_Vertex *vertex_data = new Block_Vertex[36 * CHUNK_SIZE_CUBED];
         Block_Vertex *current = vertex_data;
 
-        int x, y, z, vertex_count;
-        size_t size;
+        int x, y, z;
+        size_t vertex_count, size;
 
         for (int i = 0; i < CHUNK_SIZE_CUBED; ++i) {
                 convert_to_pos_in_chunk(i, &x, &y, &z);
@@ -203,15 +194,18 @@ void Chunk::generate_mesh()
                 if (blocks[i] == Block::AIR)
                         continue;
 
+                auto block_type = static_cast<u_int8_t>(blocks[i]);
+
                 // Negative Z
                 if (z - 1 < 0 ||
                     blocks[convert_to_block_idx(x, y, z - 1)] == Block::AIR) {
                         for (int j = 0; j < 6; ++j) {
-                                current->position =
-                                    face_nz[j] + glm::vec3{x, y, z};
                                 current->normal = normals_nz[j];
-                                current->block_type =
-                                    static_cast<int>(blocks[i]);
+                                current->uv = get_uv(block_type, uvs[j]);
+                                current->packed_coord_type =
+                                    ((face_nz[j][0] + x) << 24u) |
+                                    ((face_nz[j][1] + y) << 16u) |
+                                    ((face_nz[j][2] + z) << 8u) | block_type;
                                 current++;
                         }
                 }
@@ -219,11 +213,12 @@ void Chunk::generate_mesh()
                 if (z + 1 > 31 ||
                     blocks[convert_to_block_idx(x, y, z + 1)] == Block::AIR) {
                         for (int j = 0; j < 6; ++j) {
-                                current->position =
-                                    face_pz[j] + glm::vec3{x, y, z};
                                 current->normal = normals_pz[j];
-                                current->block_type =
-                                    static_cast<int>(blocks[i]);
+                                current->uv = get_uv(block_type, uvs[j]);
+                                current->packed_coord_type =
+                                    ((face_pz[j][0] + x) << 24u) |
+                                    ((face_pz[j][1] + y) << 16u) |
+                                    ((face_pz[j][2] + z) << 8u) | block_type;
                                 current++;
                         }
                 }
@@ -231,23 +226,25 @@ void Chunk::generate_mesh()
                 if (x - 1 < 0 ||
                     blocks[convert_to_block_idx(x - 1, y, z)] == Block::AIR) {
                         for (int j = 0; j < 6; ++j) {
-                                current->position =
-                                    face_nx[j] + glm::vec3{x, y, z};
                                 current->normal = normals_nx[j];
-                                current->block_type =
-                                    static_cast<int>(blocks[i]);
+                                current->uv = get_uv(block_type, uvs[j]);
+                                current->packed_coord_type =
+                                    ((face_nx[j][0] + x) << 24u) |
+                                    ((face_nx[j][1] + y) << 16u) |
+                                    ((face_nx[j][2] + z) << 8u) | block_type;
                                 current++;
                         }
                 }
                 // Positive X
-                if (x - 1 > 31 ||
+                if (x + 1 > 31 ||
                     blocks[convert_to_block_idx(x + 1, y, z)] == Block::AIR) {
                         for (int j = 0; j < 6; ++j) {
-                                current->position =
-                                    face_px[j] + glm::vec3{x, y, z};
                                 current->normal = normals_px[j];
-                                current->block_type =
-                                    static_cast<int>(blocks[i]);
+                                current->uv = get_uv(block_type, uvs[j]);
+                                current->packed_coord_type =
+                                    ((face_px[j][0] + x) << 24u) |
+                                    ((face_px[j][1] + y) << 16u) |
+                                    ((face_px[j][2] + z) << 8u) | block_type;
                                 current++;
                         }
                 }
@@ -255,11 +252,12 @@ void Chunk::generate_mesh()
                 if (y - 1 < 0 ||
                     blocks[convert_to_block_idx(x, y - 1, z)] == Block::AIR) {
                         for (int j = 0; j < 6; ++j) {
-                                current->position =
-                                    face_ny[j] + glm::vec3{x, y, z};
                                 current->normal = normals_ny[j];
-                                current->block_type =
-                                    static_cast<int>(blocks[i]);
+                                current->uv = get_uv(block_type, uvs[j]);
+                                current->packed_coord_type =
+                                    ((face_ny[j][0] + x) << 24u) |
+                                    ((face_ny[j][1] + y) << 16u) |
+                                    ((face_ny[j][2] + z) << 8u) | block_type;
                                 current++;
                         }
                 }
@@ -267,11 +265,12 @@ void Chunk::generate_mesh()
                 if (y + 1 > 31 ||
                     blocks[convert_to_block_idx(x, y + 1, z)] == Block::AIR) {
                         for (int j = 0; j < 6; ++j) {
-                                current->position =
-                                    face_py[j] + glm::vec3{x, y, z};
                                 current->normal = normals_py[j];
-                                current->block_type =
-                                    static_cast<int>(blocks[i]);
+                                current->uv = get_uv(block_type, uvs[j]);
+                                current->packed_coord_type =
+                                    ((face_py[j][0] + x) << 24u) |
+                                    ((face_py[j][1] + y) << 16u) |
+                                    ((face_py[j][2] + z) << 8u) | block_type;
                                 current++;
                         }
                 }
@@ -280,7 +279,7 @@ void Chunk::generate_mesh()
         vertex_count = current - vertex_data;
         size = vertex_count * sizeof(Block_Vertex);
         vertex_array.buffer_data(size, vertex_count, vertex_data);
-        std::cout << "There are: " << current - vertex_data << " vertices\n";
+        // std::cout << "There are: " << current - vertex_data << " vertices\n";
 
         dirty = false;
         delete[] vertex_data;
@@ -293,8 +292,16 @@ int Chunk::convert_to_block_idx(int x, int y, int z)
 
 void Chunk::convert_to_pos_in_chunk(int i, int *x, int *y, int *z)
 {
+        *x = i / CHUNK_SIZE_SQUARED;
+        *y = (i / CHUNK_SIZE) % CHUNK_SIZE;
         *z = i % CHUNK_SIZE;
-        *y = (i % CHUNK_SIZE_SQUARED) / CHUNK_SIZE;
-        *x = (i % CHUNK_SIZE_CUBED) / CHUNK_SIZE_SQUARED;
+}
+glm::vec2 Chunk::get_uv(u_int8_t type, const glm::vec2 &local_uv)
+{
+        float tile_size = 1.0f / 16.0f;
+        u_int8_t tile_x = type % 16;
+        u_int8_t tile_y = type / 16;
+        return glm::vec2(tile_size * (tile_x + local_uv.x),
+                         tile_size * (tile_y + local_uv.y));
 }
 } // namespace kwnc

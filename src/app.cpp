@@ -13,8 +13,8 @@ namespace kwnc
 {
 App::App()
     : window{WIDTH, HEIGHT, "Kevin Craft"},
-      shader{"assets/shaders/vert.glsl", "assets/shaders/frag.glsl"}, camera{},
-      map{}
+      shader{"assets/shaders/vert.glsl", "assets/shaders/frag.glsl"},
+      texture{"assets/textures/atlas.png"}, camera{}, map{}
 {
         glfwSetInputMode(window.get_glfw_window(), GLFW_CURSOR,
                          GLFW_CURSOR_DISABLED);
@@ -38,6 +38,9 @@ void App::run()
 
         map.setup(glm::vec3{0, 0, 0});
 
+        shader.use();
+        shader.uniform_i("v_texture", 0);
+
         while (!glfwWindowShouldClose(window.get_glfw_window())) {
                 glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
                 glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -56,6 +59,8 @@ void App::run()
                 }
 
                 std::cout << "FPS: " << fps << "\n";
+                // std::cout << "Camera Position: " <<
+                // glm::to_string(camera.position)<< "\n";
 
                 // Update game objects
                 handle_keyboard();
@@ -64,6 +69,9 @@ void App::run()
                 vp = get_view_projection();
 
                 // Bind Textures
+                glActiveTexture(0);
+                texture.bind();
+
                 // Use Shader
                 shader.use();
                 // Update Uniforms

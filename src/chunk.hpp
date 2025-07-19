@@ -3,7 +3,9 @@
 
 #include "block.hpp"
 #include "block_vertex_array.hpp"
+#include <cstdint>
 #include <glm/glm.hpp>
+#include <sys/types.h>
 
 namespace kwnc
 {
@@ -35,6 +37,7 @@ private:
 
         static int convert_to_block_idx(int x, int y, int z);
         static void convert_to_pos_in_chunk(int i, int *x, int *y, int *z);
+        static glm::vec2 get_uv(uint8_t type, const glm::vec2 &local_uv);
 };
 } // namespace kwnc
 
