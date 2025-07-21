@@ -2,6 +2,7 @@
 #define BLOCK_VERTEX_ARRAY_HPP
 
 #include "block.hpp"
+#include <cstddef>
 
 namespace kwnc
 {

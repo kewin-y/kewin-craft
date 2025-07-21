@@ -1,9 +1,9 @@
 #ifndef MAP_HPP
 #define MAP_HPP
 
-#include "shader.hpp"
 #include "chunk.hpp"
-#include <glm/vec3.hpp>
+#include "shader.hpp"
+#include <glm/glm.hpp>
 #include <memory>
 #include <tuple>
 #include <unordered_map>

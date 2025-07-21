@@ -12,7 +12,7 @@ public:
         Texture(const std::string &path);
         ~Texture();
 
-        uint get_id();
+        unsigned int get_id();
         void bind();
 
 private:

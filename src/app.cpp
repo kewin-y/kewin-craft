@@ -1,13 +1,8 @@
 #include "app.hpp"
 #include "glad/gl.h"
-#include "window.hpp"
-#include <GLFW/glfw3.h>
 #include <glm/ext.hpp>
-#include <glm/ext/vector_float3.hpp>
 #include <glm/glm.hpp>
 #include <iostream>
-#define GLM_ENABLE_EXPERIMENTAL
-#include <glm/gtx/string_cast.hpp>
 
 namespace kwnc
 {
@@ -59,8 +54,6 @@ void App::run()
                 }
 
                 std::cout << "FPS: " << fps << "\n";
-                // std::cout << "Camera Position: " <<
-                // glm::to_string(camera.position)<< "\n";
 
                 // Update game objects
                 handle_keyboard();

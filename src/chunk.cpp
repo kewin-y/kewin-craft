@@ -1,11 +1,6 @@
 #include "chunk.hpp"
-#include "block.hpp"
-#include "block_vertex_array.hpp"
-#include <cstdint>
-#include <glm/fwd.hpp>
 #include <glm/glm.hpp>
-#include <iostream>
-#include <sys/types.h>
+#include <cstdint>
 
 // clang-format off
 static constexpr uint8_t face_nz[][3] = {

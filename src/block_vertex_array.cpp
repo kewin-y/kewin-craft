@@ -1,7 +1,7 @@
 #include "block_vertex_array.hpp"
 #include "block.hpp"
 #include "glad/gl.h"
-#include <sys/types.h>
+#include <cstddef>
 
 namespace kwnc
 {
@@ -15,7 +15,7 @@ Block_Vertex_Array::Block_Vertex_Array()
         glBindVertexArray(id);
         glBindBuffer(GL_ARRAY_BUFFER, vbo);
 
-        auto stride = 5 * sizeof(float) + sizeof(uint);
+        size_t stride = 5 * sizeof(float) + sizeof(unsigned int);
 
         // a_normal
         glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, stride, nullptr);

@@ -1,13 +1,10 @@
 #include "window.hpp"
-#include "glad/gl.h"
-#include <GLFW/glfw3.h>
-#include <cstdlib>
 #include <iostream>
 
 namespace kwnc
 {
 Window::Window(int w, int h, const std::string &n)
-    : width{w}, height{h}, name{n}
+    : width{w}, height{h}, name{n}, delta_time{0.0f}
 {
         aspect = (float)width / (float)height;
 
@@ -44,10 +41,6 @@ Window::~Window()
 }
 
 GLFWwindow *Window::get_glfw_window() const { return glfw_window; }
-
-int Window::get_first_mouse() const { return first_mouse; }
-
-void Window::mouse_entered() { first_mouse = 0; }
 
 void Window::fb_size_callback(GLFWwindow *win, int width, int height)
 {

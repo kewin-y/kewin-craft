@@ -1,8 +1,6 @@
 #include "texture.hpp"
-#include "glad/gl.h"
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb/stb_image.h>
-#include <string>
 
 namespace kwnc
 {
@@ -26,10 +24,14 @@ Texture::Texture(const std::string &path)
         glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format,
                      GL_UNSIGNED_BYTE, data);
         glGenerateMipmap(GL_TEXTURE_2D);
+
+        glBindTexture(GL_TEXTURE_2D, 0);
 }
 
-Texture::~Texture() {}
-uint Texture::get_id() { return id; }
+Texture::~Texture() { glDeleteTextures(1, &id); }
+
+unsigned int Texture::get_id() { return id; }
+
 void Texture::bind() { glBindTexture(GL_TEXTURE_2D, id); }
 
 GLenum Texture::get_texture_format(int num_channels)

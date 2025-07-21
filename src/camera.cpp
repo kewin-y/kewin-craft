@@ -1,10 +1,5 @@
 #include "camera.hpp"
 #include "window.hpp"
-#include <GLFW/glfw3.h>
-#include <cmath>
-#include <glm/ext/vector_float3.hpp>
-#include <glm/geometric.hpp>
-#include <glm/trigonometric.hpp>
 
 namespace kwnc
 {
@@ -71,9 +66,9 @@ void Camera::handle_keyboard(const Window &win)
                 position += (speed * win.delta_time) * up;
         }
 
-        if (glfwGetKey(win.get_glfw_window(), GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS) {
+        if (glfwGetKey(win.get_glfw_window(), GLFW_KEY_LEFT_SHIFT) ==
+            GLFW_PRESS) {
                 position += (-speed * win.delta_time) * up;
         }
-
 }
 } // namespace kwnc

@@ -1,11 +1,9 @@
 #ifndef CHUNK_HPP
 #define CHUNK_HPP
 
-#include "block.hpp"
 #include "block_vertex_array.hpp"
-#include <cstdint>
 #include <glm/glm.hpp>
-#include <sys/types.h>
+#include <cstdint>
 
 namespace kwnc
 {

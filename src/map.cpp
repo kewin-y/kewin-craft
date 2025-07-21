@@ -1,10 +1,4 @@
 #include "map.hpp"
-#include "chunk.hpp"
-#include "shader.hpp"
-#include <functional>
-#include <glm/ext/vector_float3.hpp>
-#include <memory>
-#include <tuple>
 
 static constexpr int render_radius = 1;
 static constexpr int render_diameter = 2 * (render_radius - 1) + 1;
