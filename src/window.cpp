@@ -1,4 +1,6 @@
 #include "window.hpp"
+#include "cursor.hpp"
+#include <GLFW/glfw3.h>
 #include <iostream>
 
 namespace kwnc
@@ -26,6 +28,8 @@ Window::Window(int w, int h, const std::string &n)
         glfwSetWindowUserPointer(glfw_window, this);
         glfwSetFramebufferSizeCallback(glfw_window, fb_size_callback);
 
+        Cursor::setup_callback(glfw_window);
+
         if (!gladLoadGL((GLADloadfunc)glfwGetProcAddress)) {
                 std::cerr << "Failed to load GLAD\n";
                 glfwDestroyWindow(glfw_window);
@@ -46,6 +50,7 @@ void Window::fb_size_callback(GLFWwindow *win, int width, int height)
 {
         Window *window =
             reinterpret_cast<Window *>(glfwGetWindowUserPointer(win));
+
         glViewport(0, 0, width, height);
 
         window->width = width;

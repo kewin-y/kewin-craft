@@ -15,7 +15,7 @@ chunk_coordinate_hash::operator()(const std::tuple<int, int, int> &coords) const
                 (std::hash<int>{}(std::get<2>(coords)) << 1) << 1);
 }
 Map::Map() { chunks.reserve(max_loaded_chunks); }
-Map::~Map() {}
+// Map::~Map() {}
 
 void Map::setup(const glm::vec3 camera_position)
 {

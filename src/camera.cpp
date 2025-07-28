@@ -1,26 +1,35 @@
 #include "camera.hpp"
-#include "window.hpp"
+#include <glm/geometric.hpp>
+#define GLM_ENABLE_EXPERIMENTAL
+#include <glm/ext.hpp>
 
 namespace kwnc
 {
-Camera::Camera() {}
-
-Camera::~Camera() {}
+Camera::Camera() : Cursor() {}
 
 void Camera::update(const Window &win)
 {
-        double cursor_x, cursor_y;
+        handle_keyboard(win);
+        update_vp(win);
+}
+
+float *Camera::get_vp_ptr() { return &vp[0][0]; }
+
+void Camera::cursor_position_callback(double x_pos, double y_pos)
+{
         double x_offset, y_offset;
 
-        handle_keyboard(win);
+        if (first_mouse) {
+                last_x = x_pos;
+                last_y = y_pos;
+                first_mouse = false;
+        }
 
-        glfwGetCursorPos(win.get_glfw_window(), &cursor_x, &cursor_y);
+        x_offset = x_pos - last_x;
+        y_offset = last_y - y_pos;
 
-        x_offset = cursor_x - last_x;
-        y_offset = last_y - cursor_y;
-
-        last_x = cursor_x;
-        last_y = cursor_y;
+        last_x = x_pos;
+        last_y = y_pos;
 
         yaw += x_offset * sensitivity;
         pitch += y_offset * sensitivity;
@@ -30,14 +39,11 @@ void Camera::update(const Window &win)
         if (pitch < -89.0f)
                 pitch = -89.0f;
 
-        direction.x =
-            std::cos(glm::radians(yaw)) * std::cos(glm::radians(pitch));
-        direction.y = std::sin(glm::radians(pitch));
-        direction.z =
-            std::sin(glm::radians(yaw)) * std::cos(glm::radians(pitch));
-
-        target = position + direction;
-}
+        direction.x = cos(glm::radians(yaw)) * cos(glm::radians(pitch));
+        direction.y = sin(glm::radians(pitch));
+        direction.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
+        direction = glm::normalize(direction);
+};
 
 void Camera::handle_keyboard(const Window &win)
 {
@@ -70,5 +76,17 @@ void Camera::handle_keyboard(const Window &win)
             GLFW_PRESS) {
                 position += (-speed * win.delta_time) * up;
         }
+}
+
+void Camera::update_vp(const Window &win)
+{
+        glm::mat4 view;
+        glm::mat4 projection;
+
+        view = glm::lookAt(position, position + direction, up);
+        projection =
+            glm::perspective(glm::radians(FOV), win.aspect, 0.1f, 100.0f);
+
+        vp = projection * view;
 }
 } // namespace kwnc

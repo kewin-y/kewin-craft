@@ -16,12 +16,9 @@ App::App()
 
         glEnable(GL_DEPTH_TEST);
 }
-App::~App() {}
 
 void App::run()
 {
-        glm::mat4 vp;
-
         float last_time = 0.0f;
         float current_time = 0.0f;
 
@@ -45,6 +42,7 @@ void App::run()
                 window.delta_time = current_time - last_time;
                 last_time = current_time;
 
+                // Calculate FPS
                 frames++;
 
                 if (current_time - last_fps_calc > 0.25) {
@@ -59,8 +57,6 @@ void App::run()
                 handle_keyboard();
                 camera.update(window);
 
-                vp = get_view_projection();
-
                 // Bind Textures
                 glActiveTexture(0);
                 texture.bind();
@@ -68,7 +64,7 @@ void App::run()
                 // Use Shader
                 shader.use();
                 // Update Uniforms
-                shader.uniform_m4("mvp", &vp[0][0]);
+                shader.uniform_m4("mvp", camera.get_vp_ptr());
 
                 // RENDER
                 map.render(shader);
@@ -84,17 +80,5 @@ void App::handle_keyboard()
             GLFW_PRESS) {
                 glfwSetWindowShouldClose(window.get_glfw_window(), true);
         }
-}
-
-glm::mat4 App::get_view_projection()
-{
-        glm::mat4 view;
-        glm::mat4 projection;
-
-        view = glm::lookAt(camera.position, camera.target, camera.up);
-        projection = glm::perspective(glm::radians(camera.FOV), window.aspect,
-                                      0.1f, 100.0f);
-
-        return projection * view;
 }
 } // namespace kwnc

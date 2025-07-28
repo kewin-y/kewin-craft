@@ -17,7 +17,6 @@ public:
         static constexpr int HEIGHT = 600;
 
         App();
-        ~App();
 
         void run();
 
@@ -29,7 +28,6 @@ private:
         Map map;
 
         void handle_keyboard();
-        glm::mat4 get_view_projection();
 };
 } // namespace kwnc
 

@@ -18,7 +18,7 @@ class Map
 {
 public:
         Map();
-        ~Map();
+        // ~Map();
         std::unordered_map<std::tuple<int, int, int>, std::shared_ptr<Chunk>,
                            chunk_coordinate_hash>
             chunks;
