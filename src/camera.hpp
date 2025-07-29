@@ -24,7 +24,7 @@ protected:
         void cursor_position_callback(double x_pos, double y_pos) override;
 
 private:
-        glm::vec3 position{0.0f, 32.0f, 1.0f};
+        glm::vec3 position{0.0f, 34.0f, 1.0f};
         glm::vec3 direction{0.0f, 0.0f, -1.0f};
 
         // NOTE: Given that this game is Minecraft clone, there

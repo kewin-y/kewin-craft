@@ -11,6 +11,7 @@ class Cursor
 {
 public:
         Cursor();
+        ~Cursor();
 
         static void setup_callback(GLFWwindow *window);
 
