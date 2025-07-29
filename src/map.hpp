@@ -23,10 +23,12 @@ public:
                            chunk_coordinate_hash>
             chunks;
 
-        void setup(const glm::vec3 camera_position);
+        void setup(const glm::vec3 &camera_position);
+        void update(const glm::vec3 &camera_position);
         void render(const Shader &shader);
 
 private:
+        int last_camera_chunk_x, last_camera_chunk_y, last_camera_chunk_z;
 };
 } // namespace kwnc
 

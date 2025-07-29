@@ -2,5 +2,4 @@
 
 ## Todo
 
-- [ ] Refactor input system
-    - [x] Refactor cursor input
+- [x] Refactor cursor input

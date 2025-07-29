@@ -11,7 +11,6 @@ static constexpr uint8_t face_nz[][3] = {
         {0, 1, 0},
         {0, 0, 0},
 };
-
 static constexpr uint8_t face_pz[][3] = {
         {0, 0, 1},
         {1, 0, 1},
@@ -20,7 +19,6 @@ static constexpr uint8_t face_pz[][3] = {
         {0, 1, 1},
         {0, 0, 1},
 };
-
 static constexpr uint8_t face_nx[][3] = {
         {0, 1, 1},
         {0, 1, 0},
@@ -54,21 +52,21 @@ static constexpr uint8_t face_py[][3] = {
         {0, 1, 0},
 };
 static constexpr glm::vec3 normals_nz[] = {
-        { 0.0f,  0.0f, -1.0f},
-        { 0.0f,  0.0f, -1.0f},
-        { 0.0f,  0.0f, -1.0f},
-        { 0.0f,  0.0f, -1.0f},
-        { 0.0f,  0.0f, -1.0f},
-        { 0.0f,  0.0f, -1.0f},
+        {0.0f,  0.0f, -1.0f},
+        {0.0f,  0.0f, -1.0f},
+        {0.0f,  0.0f, -1.0f},
+        {0.0f,  0.0f, -1.0f},
+        {0.0f,  0.0f, -1.0f},
+        {0.0f,  0.0f, -1.0f},
 };
 
 static constexpr glm::vec3 normals_pz[] = {
-        { 0.0f,  0.0f,  1.0f},
-        { 0.0f,  0.0f,  1.0f},
-        { 0.0f,  0.0f,  1.0f},
-        { 0.0f,  0.0f,  1.0f},
-        { 0.0f,  0.0f,  1.0f},
-        { 0.0f,  0.0f,  1.0f},
+        {0.0f,  0.0f,  1.0f},
+        {0.0f,  0.0f,  1.0f},
+        {0.0f,  0.0f,  1.0f},
+        {0.0f,  0.0f,  1.0f},
+        {0.0f,  0.0f,  1.0f},
+        {0.0f,  0.0f,  1.0f},
 };
 static constexpr glm::vec3 normals_nx[] = {
         {-1.0f,  0.0f,  0.0f},
@@ -79,30 +77,29 @@ static constexpr glm::vec3 normals_nx[] = {
         {-1.0f,  0.0f,  0.0f},
 };
 static constexpr glm::vec3 normals_px[] = {
-        { 1.0f,  0.0f,  0.0f},
-        { 1.0f,  0.0f,  0.0f},
-        { 1.0f,  0.0f,  0.0f},
-        { 1.0f,  0.0f,  0.0f},
-        { 1.0f,  0.0f,  0.0f},
-        { 1.0f,  0.0f,  0.0f},
+        {1.0f,  0.0f,  0.0f},
+        {1.0f,  0.0f,  0.0f},
+        {1.0f,  0.0f,  0.0f},
+        {1.0f,  0.0f,  0.0f},
+        {1.0f,  0.0f,  0.0f},
+        {1.0f,  0.0f,  0.0f},
 };
 static constexpr glm::vec3 normals_ny[] = {
-        { 0.0f, -1.0f,  0.0f},
-        { 0.0f, -1.0f,  0.0f},
-        { 0.0f, -1.0f,  0.0f},
-        { 0.0f, -1.0f,  0.0f},
-        { 0.0f, -1.0f,  0.0f},
-        { 0.0f, -1.0f,  0.0f},
+        {0.0f, -1.0f,  0.0f},
+        {0.0f, -1.0f,  0.0f},
+        {0.0f, -1.0f,  0.0f},
+        {0.0f, -1.0f,  0.0f},
+        {0.0f, -1.0f,  0.0f},
+        {0.0f, -1.0f,  0.0f},
 };
 static constexpr glm::vec3 normals_py[] = {
-        { 0.0f,  1.0f,  0.0f},
-        { 0.0f,  1.0f,  0.0f},
-        { 0.0f,  1.0f,  0.0f},
-        { 0.0f,  1.0f,  0.0f},
-        { 0.0f,  1.0f,  0.0f},
-        { 0.0f,  1.0f,  0.0f},
+        {0.0f,  1.0f,  0.0f},
+        {0.0f,  1.0f,  0.0f},
+        {0.0f,  1.0f,  0.0f},
+        {0.0f,  1.0f,  0.0f},
+        {0.0f,  1.0f,  0.0f},
+        {0.0f,  1.0f,  0.0f},
 };
-
 static constexpr glm::vec2 uvs[] = {
         {0.0f, 1.0f},
         {1.0f, 1.0f},
@@ -274,7 +271,6 @@ void Chunk::generate_mesh()
         vertex_count = current - vertex_data;
         size = vertex_count * sizeof(Block_Vertex);
         vertex_array.buffer_data(size, vertex_count, vertex_data);
-        // std::cout << "There are: " << current - vertex_data << " vertices\n";
 
         dirty = false;
         delete[] vertex_data;

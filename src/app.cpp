@@ -56,6 +56,7 @@ void App::run()
                 // Update game objects
                 handle_keyboard();
                 camera.update(window);
+                map.update(camera.position);
 
                 // Bind Textures
                 glActiveTexture(0);
