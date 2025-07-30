@@ -11,7 +11,7 @@ namespace kwnc
 class Camera : public Cursor
 {
 public:
-        glm::vec3 position{0.0f, 34.0f, 1.0f};
+        glm::vec3 position{16.0f, 34.0f, 16.0f};
 
         const float FOV = 70.0f;
         const float sensitivity = 0.2f;
@@ -26,7 +26,7 @@ protected:
         void cursor_position_callback(double x_pos, double y_pos) override;
 
 private:
-        glm::vec3 direction{0.0f, 0.0f, -1.0f};
+        glm::vec3 direction{1.0f, 0.0f, 0.0f};
 
         // NOTE: Given that this game is Minecraft clone, there
         // should be no reason why this vector changes

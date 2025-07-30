@@ -28,7 +28,7 @@ void App::run()
 
         glfwSwapInterval(0);
 
-        map.setup(glm::vec3{0, 0, 0});
+        map.setup(camera.position);
 
         shader.use();
         shader.uniform_i("v_texture", 0);
