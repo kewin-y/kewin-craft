@@ -20,7 +20,13 @@ chunk_coordinate_hash::operator()(const std::tuple<int, int, int> &coords) const
                ((std::hash<int>{}(std::get<1>(coords))) ^
                 (std::hash<int>{}(std::get<2>(coords)) << 1) << 1);
 }
-Map::Map() { chunks.reserve(MAX_LOADED_CHUNKS); }
+Map::Map() : noise{}
+{
+        chunks.reserve(MAX_LOADED_CHUNKS);
+        noise.SetNoiseType(FastNoiseLite::NoiseType_Perlin);
+        // TODO: Generate Seed
+        noise.SetSeed(0);
+}
 
 void Map::setup(const glm::vec3 &camera_position)
 {
@@ -30,9 +36,6 @@ void Map::setup(const glm::vec3 &camera_position)
         camera_chunk_x = std::floor(camera_position.x / Chunk::CHUNK_SIZE);
         camera_chunk_y = std::floor(camera_position.y / Chunk::CHUNK_SIZE);
         camera_chunk_z = std::floor(camera_position.z / Chunk::CHUNK_SIZE);
-
-        std::cout << camera_chunk_x << camera_chunk_y << camera_chunk_z
-                  << std::endl;
 
         start_x = camera_chunk_x - RENDER_RADIUS;
         start_y = camera_chunk_y - RENDER_RADIUS;
@@ -44,8 +47,7 @@ void Map::setup(const glm::vec3 &camera_position)
                              x++) {
                                 auto chunk = std::make_shared<Chunk>(x, y, z);
 
-                                if (y < 1)
-                                        chunk->fill();
+                                chunk->generate_terrain(noise);
 
                                 chunks.insert(
                                     {std::make_tuple(x, y, z), chunk});
@@ -128,8 +130,7 @@ void Map::new_chunks_x(int dx, int camera_chunk_x, int camera_chunk_y,
                                 auto chunk =
                                     std::make_shared<Chunk>(added_edge, y, z);
 
-                                if (y < 1)
-                                        chunk->fill();
+                                chunk->generate_terrain(noise);
 
                                 chunks.insert({added, chunk});
                         }
@@ -163,8 +164,7 @@ void Map::new_chunks_y(int dy, int camera_chunk_x, int camera_chunk_y,
                                 auto chunk =
                                     std::make_shared<Chunk>(x, added_edge, z);
 
-                                if (added_edge < 1)
-                                        chunk->fill();
+                                chunk->generate_terrain(noise);
 
                                 chunks.insert({added, chunk});
                         }
@@ -198,8 +198,7 @@ void Map::new_chunks_z(int dz, int camera_chunk_x, int camera_chunk_y,
                                 auto chunk =
                                     std::make_shared<Chunk>(x, y, added_edge);
 
-                                if (y < 1)
-                                        chunk->fill();
+                                chunk->generate_terrain(noise);
 
                                 chunks.insert({added, chunk});
                         }

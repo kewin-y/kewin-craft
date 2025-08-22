@@ -2,6 +2,7 @@
 #define MAP_HPP
 
 #include "chunk.hpp"
+#include "FastNoiseLite.h"
 #include "shader.hpp"
 #include <glm/glm.hpp>
 #include <memory>
@@ -29,6 +30,7 @@ public:
 
 private:
         int last_camera_chunk_x, last_camera_chunk_y, last_camera_chunk_z;
+        FastNoiseLite noise;
         void new_chunks_x(int dx, int camera_chunk_x, int camera_chunk_y,
                           int camera_chunk_z);
         void new_chunks_y(int dy, int camera_chunk_x, int camera_chunk_y,

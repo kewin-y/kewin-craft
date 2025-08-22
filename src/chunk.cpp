@@ -1,6 +1,9 @@
 #include "chunk.hpp"
-#include <glm/glm.hpp>
+#include "FastNoiseLite.h"
 #include <cstdint>
+#include <glm/common.hpp>
+#include <glm/glm.hpp>
+#include <iostream>
 
 // clang-format off
 static constexpr uint8_t face_nz[][3] = {
@@ -128,6 +131,33 @@ Chunk::~Chunk()
 bool Chunk::is_empty() { return nullptr == blocks; }
 
 bool Chunk::is_dirty() { return dirty; }
+
+void Chunk::generate_terrain(const FastNoiseLite &noise)
+{
+        for (int x = 0; x < CHUNK_SIZE; ++x) {
+                for (int z = 0; z < CHUNK_SIZE; ++z) {
+                        int height = std::floor(
+                            TERRAIN_CONSTANT *
+                                noise.GetNoise((float)x + chunk_x * CHUNK_SIZE,
+                                               (float)z +
+                                                   chunk_z * CHUNK_SIZE) +
+                            TERRAIN_CONSTANT);
+
+                        int local_height = glm::min(
+                            CHUNK_SIZE,
+                            glm::max(0, height - chunk_y * CHUNK_SIZE));
+
+                        int y = 0;
+                        for (; y < local_height; ++y) {
+                                add_voxel(x, y, z, Block::DIRT);
+                        }
+
+                        for (; y < CHUNK_SIZE; ++y) {
+                                add_voxel(x, y, z, Block::AIR);
+                        }
+                }
+        }
+}
 
 void Chunk::add_voxel(int x, int y, int z, Block type)
 {

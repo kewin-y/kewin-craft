@@ -1,6 +1,7 @@
 #ifndef CHUNK_HPP
 #define CHUNK_HPP
 
+#include "FastNoiseLite.h"
 #include "block_vertex_array.hpp"
 #include <glm/glm.hpp>
 #include <cstdint>
@@ -14,6 +15,7 @@ public:
         static constexpr int CHUNK_SIZE_SQUARED = CHUNK_SIZE * CHUNK_SIZE;
         static constexpr int CHUNK_SIZE_CUBED =
             CHUNK_SIZE * CHUNK_SIZE * CHUNK_SIZE;
+        static constexpr int TERRAIN_CONSTANT = 64;
 
         int chunk_x, chunk_y, chunk_z;
         Block_Vertex_Array vertex_array;
@@ -24,6 +26,7 @@ public:
         bool is_empty();
         bool is_dirty();
 
+        void generate_terrain(const FastNoiseLite &noise);
         void add_voxel(int x, int y, int z, Block type);
         void fill();
         void reset();

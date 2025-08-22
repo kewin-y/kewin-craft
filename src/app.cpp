@@ -51,7 +51,7 @@ void App::run()
                         last_fps_calc = current_time;
                 }
 
-                std::cout << "FPS: " << fps << "\n";
+                // std::cout << "FPS: " << fps << "\n";
 
                 // Update game objects
                 handle_keyboard();
