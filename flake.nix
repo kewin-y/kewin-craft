@@ -32,6 +32,10 @@
             xorg.libXrandr
             xorg.libXi
           ];
+
+          shellHook = ''
+            export SHELL='${pkgs.mksh}/bin/mksh'
+          '';
         };
       };
     };
