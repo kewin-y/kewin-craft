@@ -22,16 +22,16 @@
             bear
             valgrind-light
             clang-tools
-            glfw
+          ];
+
+          buildInputs = with pkgs; [
             glm
             stb
+            glfw
             xorg.libX11
             xorg.libXrandr
             xorg.libXi
           ];
-
-          # buildInputs = with pkgs; [
-          # ];
 
           shellHook = ''
             export SHELL='${pkgs.mksh}/bin/mksh'

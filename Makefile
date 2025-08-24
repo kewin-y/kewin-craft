@@ -1,5 +1,5 @@
 CXX := g++
-CXXFLAGS := -Wall -Wextra -std=c++17 -ggdb -I./include
+CXXFLAGS := -Wall -Wextra -std=c++17 -I./include -ggdb3
 LDFLAGS := -lglfw -lGL -lX11 -lpthread -lXrandr -lXi -ldl -lm
 
 SRC_DIR := src
