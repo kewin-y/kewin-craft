@@ -4,6 +4,55 @@
 #include <iostream>
 #include <sstream>
 
+static std::string get_file_content(const std::string &path)
+{
+        std::string content;
+        std::ifstream file;
+        std::stringstream stream;
+
+        file.exceptions(std::ifstream::failbit | std::ifstream::badbit);
+
+        try {
+                file.open(path);
+                stream << file.rdbuf();
+                file.close();
+                content = stream.str();
+        } catch (const std::exception &e) {
+                std::cerr << "Error reading shader file:" << e.what()
+                          << std::endl;
+        }
+
+        return content;
+}
+
+static void check_compile_errors(unsigned int shader)
+{
+        int success;
+        char infoLog[1024];
+
+        glGetShaderiv(shader, GL_COMPILE_STATUS, &success);
+
+        if (!success) {
+                glGetShaderInfoLog(shader, 1024, NULL, infoLog);
+
+                std::cerr << "Error compiling shader: " << infoLog << std::endl;
+        }
+}
+
+static void check_linking_errors(unsigned int program)
+{
+        int success;
+        char infoLog[1024];
+
+        glGetProgramiv(program, GL_LINK_STATUS, &success);
+
+        if (!success) {
+                glGetProgramInfoLog(program, 1024, NULL, infoLog);
+
+                std::cerr << "Error linking shader: " << infoLog << std::endl;
+        }
+}
+
 namespace kwnc
 {
 Shader::Shader(const std::string &vertex_path, const std::string &fragment_path)
@@ -30,7 +79,7 @@ Shader::Shader(const std::string &vertex_path, const std::string &fragment_path)
         glAttachShader(id, vertex_shader);
         glAttachShader(id, fragment_shader);
         glLinkProgram(id);
-        check_linking_errors();
+        check_linking_errors(id);
 
         glDeleteShader(vertex_shader);
         glDeleteShader(fragment_shader);
@@ -58,53 +107,5 @@ void Shader::uniform_i(const std::string &name, int i) const
         glUniform1i(glGetUniformLocation(id, name.c_str()), i);
 }
 
-std::string Shader::get_file_content(const std::string &path)
-{
-        std::string content;
-        std::ifstream file;
-        std::stringstream stream;
-
-        file.exceptions(std::ifstream::failbit | std::ifstream::badbit);
-
-        try {
-                file.open(path);
-                stream << file.rdbuf();
-                file.close();
-                content = stream.str();
-        } catch (const std::exception &e) {
-                std::cerr << "Error reading shader file:" << e.what()
-                          << std::endl;
-        }
-
-        return content;
-}
-
-void Shader::check_compile_errors(unsigned int shader)
-{
-        int success;
-        char infoLog[1024];
-
-        glGetShaderiv(shader, GL_COMPILE_STATUS, &success);
-
-        if (!success) {
-                glGetShaderInfoLog(shader, 1024, NULL, infoLog);
-
-                std::cerr << "Error compiling shader: " << infoLog << std::endl;
-        }
-}
-
-void Shader::check_linking_errors()
-{
-        int success;
-        char infoLog[1024];
-
-        glGetProgramiv(id, GL_LINK_STATUS, &success);
-
-        if (!success) {
-                glGetProgramInfoLog(id, 1024, NULL, infoLog);
-
-                std::cerr << "Error linking shader: " << infoLog << std::endl;
-        }
-}
 
 } // namespace kwnc

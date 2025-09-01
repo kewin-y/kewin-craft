@@ -138,8 +138,8 @@ void Chunk::generate_terrain(const FastNoiseLite &noise)
                 for (int z = 0; z < CHUNK_SIZE; ++z) {
                         int height = std::floor(
                             TERRAIN_CONSTANT *
-                                noise.GetNoise((float)x + chunk_x * CHUNK_SIZE,
-                                               (float)z +
+                                noise.GetNoise(static_cast<float>(x) + chunk_x * CHUNK_SIZE,
+                                               static_cast<float>(z) +
                                                    chunk_z * CHUNK_SIZE) +
                             TERRAIN_CONSTANT);
 
@@ -148,18 +148,19 @@ void Chunk::generate_terrain(const FastNoiseLite &noise)
                             glm::max(0, height - chunk_y * CHUNK_SIZE));
 
                         int y = 0;
+
                         for (; y < local_height; ++y) {
-                                add_voxel(x, y, z, Block::DIRT);
+                                set_voxel(x, y, z, Block::DIRT);
                         }
 
                         for (; y < CHUNK_SIZE; ++y) {
-                                add_voxel(x, y, z, Block::AIR);
+                                set_voxel(x, y, z, Block::AIR);
                         }
                 }
         }
 }
 
-void Chunk::add_voxel(int x, int y, int z, Block type)
+void Chunk::set_voxel(int x, int y, int z, Block type)
 {
         int idx;
 

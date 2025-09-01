@@ -20,10 +20,6 @@ class Shader
                 void uniform_i(const std::string &name, int i) const;
         private:
                 unsigned int id;
-
-                std::string get_file_content(const std::string &path);
-                void check_compile_errors(unsigned int shader);
-                void check_linking_errors();
 };
 
 } // namespace kwnc

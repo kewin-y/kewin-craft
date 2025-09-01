@@ -20,8 +20,6 @@ private:
         int width;
         int height;
         int channels;
-
-        static GLenum get_texture_format(int channels);
 };
 } // namespace kwnc
 

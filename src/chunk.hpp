@@ -27,7 +27,7 @@ public:
         bool is_dirty();
 
         void generate_terrain(const FastNoiseLite &noise);
-        void add_voxel(int x, int y, int z, Block type);
+        void set_voxel(int x, int y, int z, Block type);
         void fill();
         void reset();
         void generate_mesh();
