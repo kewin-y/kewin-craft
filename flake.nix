@@ -18,20 +18,28 @@
         ...
       }: {
         devShells.default = pkgs.mkShell {
-          packages = with pkgs; [
+          buildInputs = with pkgs; [
             bear
             valgrind-light
             clang-tools
+            cmake
+            pkg-config
           ];
 
-          buildInputs = with pkgs; [
-            glm
-            stb
-            glfw
-            xorg.libX11
-            xorg.libXrandr
-            xorg.libXi
-          ];
+          LD_LIBRARY_PATH = "${pkgs.lib.makeLibraryPath [
+            pkgs.xorg.libX11
+            pkgs.xorg.libXrandr
+            pkgs.xorg.libXi
+            pkgs.xorg.libXinerama
+            pkgs.xorg.libXcursor
+            pkgs.wayland
+            pkgs.libffi
+            pkgs.libxkbcommon
+            pkgs.wayland-scanner
+            pkgs.libGL
+            pkgs.libglvnd
+            pkgs.mesa
+          ]}:/run/opengl-driver/lib";
 
           shellHook = ''
             export SHELL='${pkgs.mksh}/bin/mksh'
