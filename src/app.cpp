@@ -1,3 +1,4 @@
+#include "config.h"
 #include "app.hpp"
 #include "glad/gl.h"
 #include <glm/ext.hpp>
@@ -8,8 +9,8 @@ namespace kwnc
 {
 App::App()
     : window{WIDTH, HEIGHT, "Kevin Craft"},
-      shader{"assets/shaders/vert.glsl", "assets/shaders/frag.glsl"},
-      texture{"assets/textures/atlas.png"}, camera{}, map{}
+      shader{ASSETS_PATH "shaders/vert.glsl", ASSETS_PATH "shaders/frag.glsl"},
+      texture{ASSETS_PATH "textures/atlas.png"}, camera{}, map{}
 {
         glfwSetInputMode(window.get_glfw_window(), GLFW_CURSOR,
                          GLFW_CURSOR_DISABLED);
