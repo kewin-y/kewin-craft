@@ -8,10 +8,11 @@
 #include <iostream>
 #include <memory>
 #include <mutex>
+#include <thread>
 #include <tuple>
 #include <vector>
 
-static constexpr int RENDER_RADIUS = 3;
+static constexpr int RENDER_RADIUS = 8;
 static constexpr int RENDER_DIAMETER = 2 * RENDER_RADIUS + 1;
 static constexpr int MAX_LOADED_CHUNKS =
     RENDER_DIAMETER * RENDER_DIAMETER * RENDER_DIAMETER;
@@ -35,7 +36,9 @@ Map::Map() : noise{}
 
 static std::mutex s_chunks_mtx;
 
-static void init_chunks(
+#define MULTITHREADING
+
+static void init_chunk(
     std::unordered_map<std::tuple<int, int, int>, std::shared_ptr<Chunk>,
                        chunk_coordinate_hash> &chunks,
     const FastNoiseLite &noise, int x, int y, int z)
@@ -43,11 +46,11 @@ static void init_chunks(
         auto key = std::make_tuple(x, y, z);
         auto chunk = std::make_shared<Chunk>(x, y, z);
         chunk->generate_terrain(noise);
-        std::lock_guard<std::mutex> lock(s_chunks_mtx);
+
+        std::scoped_lock<std::mutex> lock(s_chunks_mtx);
         chunks.emplace(key, chunk);
 }
 
-#define MULTITHREADING
 
 void Map::setup(const glm::vec3 &camera_position)
 {
@@ -67,20 +70,24 @@ void Map::setup(const glm::vec3 &camera_position)
         start_y = camera_chunk_y - RENDER_RADIUS;
         start_z = camera_chunk_z - RENDER_RADIUS;
 
+        last_camera_chunk_x = camera_chunk_x;
+        last_camera_chunk_y = camera_chunk_y;
+        last_camera_chunk_z = camera_chunk_z;
+
         for (int z = start_z; z < RENDER_DIAMETER + start_z; z++) {
                 for (int y = start_y; y < RENDER_DIAMETER + start_y; y++) {
                         for (int x = start_x; x < RENDER_DIAMETER + start_x;
                              x++) {
 #ifdef MULTITHREADING
                                 futures.emplace_back(
-                                    std::async(std::launch::async, init_chunks,
+                                    std::async(std::launch::async, init_chunk,
                                                std::ref(chunks),
                                                std::ref(noise), x, y, z));
 #else
                                 auto key = std::make_tuple(x, y, z);
                                 auto chunk = std::make_shared<Chunk>(x, y, z);
-                                chunk->generate_terrain(noise);
-                                std::lock_guard<std::mutex> lock(s_chunks_mtx);
+                                // chunk->generate_terrain(noise);
+                                chunk->fill();
                                 chunks.emplace(key, chunk);
 #endif
                         }
@@ -92,9 +99,6 @@ void Map::setup(const glm::vec3 &camera_position)
         }
 #endif
 
-        last_camera_chunk_x = camera_chunk_x;
-        last_camera_chunk_y = camera_chunk_y;
-        last_camera_chunk_z = camera_chunk_z;
 }
 
 void Map::update(const glm::vec3 &camera_position)
@@ -127,16 +131,24 @@ void Map::update(const glm::vec3 &camera_position)
 
 void Map::render(const Shader &shader)
 {
-        for (auto &[pos, chunk] : chunks) {
-                if (chunk->dirty.load(std::memory_order_seq_cst)) {
-                        chunk->generate_mesh();
-                }
 
-                auto world_pos = glm::vec3{Chunk::CHUNK_SIZE * chunk->chunk_x,
-                                           Chunk::CHUNK_SIZE * chunk->chunk_y,
-                                           Chunk::CHUNK_SIZE * chunk->chunk_z};
-                shader.uniform_v3("world_pos", &world_pos[0]);
-                chunk->vertex_array.draw();
+        for (auto &[pos, chunk] : chunks) {
+                // std::cout << "Rendering chunk at (" << chunk->chunk_x
+                //           <<", " << chunk->chunk_y << ", "<< chunk->chunk_z
+                //           << ")"
+                //           << std::endl;
+                if (chunk->dirty) {
+                        // std::cout << "Chunk is dirty" << std::endl;
+                        chunk->generate_mesh();
+                } else {
+                        // std::cout << "Drawing chunk" << std::endl;
+                        auto world_pos =
+                            glm::vec3{Chunk::CHUNK_SIZE * chunk->chunk_x,
+                                      Chunk::CHUNK_SIZE * chunk->chunk_y,
+                                      Chunk::CHUNK_SIZE * chunk->chunk_z};
+                        shader.uniform_v3("world_pos", &world_pos[0]);
+                        chunk->vertex_array.draw();
+                }
         }
 }
 

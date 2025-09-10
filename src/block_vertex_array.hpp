@@ -12,10 +12,12 @@ public:
         Block_Vertex_Array();
         ~Block_Vertex_Array();
 
+        void init();
         void draw();
         void buffer_data(size_t size, int vertex_count,
                          Block_Vertex *vertex_data);
 
+        bool initialized = false;
 private:
         unsigned int id;
         unsigned int vbo;

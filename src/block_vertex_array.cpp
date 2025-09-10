@@ -2,11 +2,15 @@
 #include "block.hpp"
 #include "glad/gl.h"
 #include <cstddef>
+#include <iostream>
 
 namespace kwnc
 {
 Block_Vertex_Array::Block_Vertex_Array()
 {
+}
+
+void Block_Vertex_Array::init() {
         vertex_count = 0;
 
         // Setup VAO
@@ -31,6 +35,8 @@ Block_Vertex_Array::Block_Vertex_Array()
         glEnableVertexAttribArray(2);
         glBindVertexArray(0);
         glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+        initialized = true;
 }
 
 Block_Vertex_Array::~Block_Vertex_Array()
@@ -49,6 +55,7 @@ void Block_Vertex_Array::buffer_data(size_t size, int vertex_count,
         glBufferData(GL_ARRAY_BUFFER, size, vertex_data, GL_STATIC_DRAW);
         glBindVertexArray(0);
         glBindBuffer(GL_ARRAY_BUFFER, 0);
+
 }
 
 void Block_Vertex_Array::draw()

@@ -3,10 +3,10 @@
 
 #include "FastNoiseLite.h"
 #include "block_vertex_array.hpp"
-#include <glm/glm.hpp>
-#include <cstdint>
-#include <mutex>
 #include <atomic>
+#include <cstdint>
+#include <glm/glm.hpp>
+#include <mutex>
 
 namespace kwnc
 {
@@ -22,19 +22,20 @@ public:
         int chunk_x, chunk_y, chunk_z;
         Block_Vertex_Array vertex_array;
 
-        std::atomic<bool> dirty{true};
+        bool dirty = false;
 
         Chunk(int x, int y, int z);
         ~Chunk();
 
         void generate_terrain(const FastNoiseLite &noise);
+        void fill();
         // void set_voxel(int x, int y, int z, Block type);
         // void reset();
         void generate_mesh();
 
 private:
         Block *blocks;
-        std::mutex mtx;
+        mutable std::mutex mtx;
 
         static int convert_to_block_idx(int x, int y, int z);
         static void convert_to_pos_in_chunk(int i, int *x, int *y, int *z);

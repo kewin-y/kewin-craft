@@ -1,6 +1,8 @@
 #include "app.hpp"
+#include "GLFW/glfw3.h"
 #include "config.h"
 #include "glad/gl.h"
+#include <chrono>
 #include <glm/ext.hpp>
 #include <glm/glm.hpp>
 #include <iostream>
@@ -29,11 +31,17 @@ void App::run()
 
         glfwSwapInterval(0);
 
+        auto start = std::chrono::system_clock::now();
         map.setup(camera.position);
+        auto end = std::chrono::system_clock::now();
+        std::chrono::duration<double> elapsed = end - start;
+        std::cout << "map.setup took: " << elapsed.count() << "s" << std::endl;
 
         shader.use();
         shader.uniform_i("v_texture", 0);
 
+// #define DONT_DIE
+#ifndef DONT_DIE
         while (!glfwWindowShouldClose(window.get_glfw_window())) {
                 glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
                 glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -76,8 +84,9 @@ void App::run()
                 map.render(shader);
 
                 glfwSwapBuffers(window.get_glfw_window());
-                glfwWaitEvents();
+                glfwPollEvents();
         }
+#endif
 }
 
 void App::handle_keyboard()
