@@ -5,6 +5,8 @@
 #include "block_vertex_array.hpp"
 #include <glm/glm.hpp>
 #include <cstdint>
+#include <mutex>
+#include <atomic>
 
 namespace kwnc
 {
@@ -20,21 +22,19 @@ public:
         int chunk_x, chunk_y, chunk_z;
         Block_Vertex_Array vertex_array;
 
+        std::atomic<bool> dirty{true};
+
         Chunk(int x, int y, int z);
         ~Chunk();
 
-        bool is_empty();
-        bool is_dirty();
-
         void generate_terrain(const FastNoiseLite &noise);
-        void set_voxel(int x, int y, int z, Block type);
-        void fill();
-        void reset();
+        // void set_voxel(int x, int y, int z, Block type);
+        // void reset();
         void generate_mesh();
 
 private:
-        Block *blocks = nullptr;
-        bool dirty = false;
+        Block *blocks;
+        std::mutex mtx;
 
         static int convert_to_block_idx(int x, int y, int z);
         static void convert_to_pos_in_chunk(int i, int *x, int *y, int *z);

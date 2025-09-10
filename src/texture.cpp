@@ -45,7 +45,7 @@ Texture::Texture(const std::string &path)
 
 Texture::~Texture() { glDeleteTextures(1, &id); }
 
-unsigned int Texture::get_id() { return id; }
+unsigned int Texture::get_id() const { return id; }
 
-void Texture::bind() { glBindTexture(GL_TEXTURE_2D, id); }
+void Texture::bind() const { glBindTexture(GL_TEXTURE_2D, id); }
 } // namespace kwnc

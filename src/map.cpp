@@ -1,10 +1,15 @@
 #include "map.hpp"
+#include "FastNoiseLite.h"
 #include "chunk.hpp"
+#include <atomic>
 #include <cstdlib>
+#include <future>
 #include <glm/common.hpp>
 #include <iostream>
 #include <memory>
+#include <mutex>
 #include <tuple>
+#include <vector>
 
 static constexpr int RENDER_RADIUS = 3;
 static constexpr int RENDER_DIAMETER = 2 * RENDER_RADIUS + 1;
@@ -28,10 +33,31 @@ Map::Map() : noise{}
         noise.SetSeed(0);
 }
 
+static std::mutex s_chunks_mtx;
+
+static void init_chunks(
+    std::unordered_map<std::tuple<int, int, int>, std::shared_ptr<Chunk>,
+                       chunk_coordinate_hash> &chunks,
+    const FastNoiseLite &noise, int x, int y, int z)
+{
+        auto key = std::make_tuple(x, y, z);
+        auto chunk = std::make_shared<Chunk>(x, y, z);
+        chunk->generate_terrain(noise);
+        std::lock_guard<std::mutex> lock(s_chunks_mtx);
+        chunks.emplace(key, chunk);
+}
+
+#define MULTITHREADING
+
 void Map::setup(const glm::vec3 &camera_position)
 {
         int camera_chunk_x, camera_chunk_y, camera_chunk_z;
         int start_x, start_y, start_z;
+
+#ifdef MULTITHREADING
+        std::vector<std::future<void>> futures;
+        futures.reserve(MAX_LOADED_CHUNKS);
+#endif // MULTITHREADING
 
         camera_chunk_x = std::floor(camera_position.x / Chunk::CHUNK_SIZE);
         camera_chunk_y = std::floor(camera_position.y / Chunk::CHUNK_SIZE);
@@ -43,17 +69,28 @@ void Map::setup(const glm::vec3 &camera_position)
 
         for (int z = start_z; z < RENDER_DIAMETER + start_z; z++) {
                 for (int y = start_y; y < RENDER_DIAMETER + start_y; y++) {
-                        for (int x = start_z; x < RENDER_DIAMETER + start_x;
+                        for (int x = start_x; x < RENDER_DIAMETER + start_x;
                              x++) {
+#ifdef MULTITHREADING
+                                futures.emplace_back(
+                                    std::async(std::launch::async, init_chunks,
+                                               std::ref(chunks),
+                                               std::ref(noise), x, y, z));
+#else
+                                auto key = std::make_tuple(x, y, z);
                                 auto chunk = std::make_shared<Chunk>(x, y, z);
-
                                 chunk->generate_terrain(noise);
-
-                                chunks.insert(
-                                    {std::make_tuple(x, y, z), chunk});
+                                std::lock_guard<std::mutex> lock(s_chunks_mtx);
+                                chunks.emplace(key, chunk);
+#endif
                         }
                 }
         }
+#ifdef MULTITHREADING
+        for (auto &future : futures) {
+                future.get();
+        }
+#endif
 
         last_camera_chunk_x = camera_chunk_x;
         last_camera_chunk_y = camera_chunk_y;
@@ -91,16 +128,15 @@ void Map::update(const glm::vec3 &camera_position)
 void Map::render(const Shader &shader)
 {
         for (auto &[pos, chunk] : chunks) {
-                if (chunk->is_dirty())
+                if (chunk->dirty.load(std::memory_order_seq_cst)) {
                         chunk->generate_mesh();
-                if (!chunk->is_empty()) {
-                        auto world_pos =
-                            glm::vec3{Chunk::CHUNK_SIZE * chunk->chunk_x,
-                                      Chunk::CHUNK_SIZE * chunk->chunk_y,
-                                      Chunk::CHUNK_SIZE * chunk->chunk_z};
-                        shader.uniform_v3("world_pos", &world_pos[0]);
-                        chunk->vertex_array.draw();
                 }
+
+                auto world_pos = glm::vec3{Chunk::CHUNK_SIZE * chunk->chunk_x,
+                                           Chunk::CHUNK_SIZE * chunk->chunk_y,
+                                           Chunk::CHUNK_SIZE * chunk->chunk_z};
+                shader.uniform_v3("world_pos", &world_pos[0]);
+                chunk->vertex_array.draw();
         }
 }
 

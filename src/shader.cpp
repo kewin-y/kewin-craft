@@ -87,9 +87,9 @@ Shader::Shader(const std::string &vertex_path, const std::string &fragment_path)
 
 Shader::~Shader() { glDeleteProgram(id); }
 
-unsigned int Shader::get_id() { return id; }
+unsigned int Shader::get_id() const { return id; }
 
-void Shader::use() { glUseProgram(id); }
+void Shader::use() const { glUseProgram(id); }
 
 void Shader::uniform_m4(const std::string &name, float *mat) const
 {

@@ -1,5 +1,5 @@
-#include "config.h"
 #include "app.hpp"
+#include "config.h"
 #include "glad/gl.h"
 #include <glm/ext.hpp>
 #include <glm/glm.hpp>
@@ -57,7 +57,11 @@ void App::run()
                 // Update game objects
                 handle_keyboard();
                 camera.update(window);
+
+#define DONT_GENERATE_NEW_CHUNKS
+#ifndef DONT_GENERATE_NEW_CHUNKS
                 map.update(camera.position);
+#endif
 
                 // Bind Textures
                 glActiveTexture(0);

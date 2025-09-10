@@ -22,8 +22,8 @@ public:
 
 private:
         Window window;
-        Shader shader;
-        Texture texture;
+        const Shader shader;
+        const Texture texture;
         Camera camera;
         Map map;
 
