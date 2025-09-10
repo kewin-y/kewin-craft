@@ -63,7 +63,6 @@ void App::run()
                 handle_keyboard();
                 camera.update(window);
 
-#define DONT_GENERATE_NEW_CHUNKS
 #ifndef DONT_GENERATE_NEW_CHUNKS
                 map.update(camera.position);
 #endif

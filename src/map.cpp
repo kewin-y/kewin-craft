@@ -12,12 +12,10 @@
 #include <tuple>
 #include <vector>
 
-static constexpr int RENDER_RADIUS = 8;
+static constexpr int RENDER_RADIUS = 3;
 static constexpr int RENDER_DIAMETER = 2 * RENDER_RADIUS + 1;
 static constexpr int MAX_LOADED_CHUNKS =
     RENDER_DIAMETER * RENDER_DIAMETER * RENDER_DIAMETER;
-
-static std::mutex s_chunks_mtx;
 
 namespace kwnc
 {
@@ -36,32 +34,13 @@ Map::Map() : noise{}
         noise.SetSeed(0);
 }
 
-
-#define MULTITHREADING
-
-static void init_chunk(
-    std::unordered_map<std::tuple<int, int, int>, std::shared_ptr<Chunk>,
-                       chunk_coordinate_hash> &chunks,
-    const FastNoiseLite &noise, int x, int y, int z)
-{
-        auto key = std::make_tuple(x, y, z);
-        auto chunk = std::make_shared<Chunk>(x, y, z);
-        chunk->generate_terrain(noise);
-
-        std::scoped_lock<std::mutex> lock(s_chunks_mtx);
-        chunks.emplace(key, chunk);
-}
-
-
 void Map::setup(const glm::vec3 &camera_position)
 {
         int camera_chunk_x, camera_chunk_y, camera_chunk_z;
         int start_x, start_y, start_z;
 
-#ifdef MULTITHREADING
         std::vector<std::future<void>> futures;
         futures.reserve(MAX_LOADED_CHUNKS);
-#endif // MULTITHREADING
 
         camera_chunk_x = std::floor(camera_position.x / Chunk::CHUNK_SIZE);
         camera_chunk_y = std::floor(camera_position.y / Chunk::CHUNK_SIZE);
@@ -79,27 +58,26 @@ void Map::setup(const glm::vec3 &camera_position)
                 for (int y = start_y; y < RENDER_DIAMETER + start_y; y++) {
                         for (int x = start_x; x < RENDER_DIAMETER + start_x;
                              x++) {
-#ifdef MULTITHREADING
+                                auto init_chunk = [this, x, y, z]() {
+                                        auto key = std::make_tuple(x, y, z);
+                                        auto chunk =
+                                            std::make_shared<Chunk>(x, y, z);
+                                        chunk->generate_terrain(this->noise);
+
+                                        std::scoped_lock<std::mutex> lock(
+                                            this->mutex);
+                                        this->chunks.emplace(key, chunk);
+                                };
+
                                 futures.emplace_back(
-                                    std::async(std::launch::async, init_chunk,
-                                               std::ref(chunks),
-                                               std::ref(noise), x, y, z));
-#else
-                                auto key = std::make_tuple(x, y, z);
-                                auto chunk = std::make_shared<Chunk>(x, y, z);
-                                // chunk->generate_terrain(noise);
-                                chunk->fill();
-                                chunks.emplace(key, chunk);
-#endif
+                                    std::async(std::launch::async, init_chunk));
                         }
                 }
         }
-#ifdef MULTITHREADING
+
         for (auto &future : futures) {
                 future.get();
         }
-#endif
-
 }
 
 void Map::update(const glm::vec3 &camera_position)
@@ -134,15 +112,9 @@ void Map::render(const Shader &shader)
 {
 
         for (auto &[pos, chunk] : chunks) {
-                // std::cout << "Rendering chunk at (" << chunk->chunk_x
-                //           <<", " << chunk->chunk_y << ", "<< chunk->chunk_z
-                //           << ")"
-                //           << std::endl;
                 if (chunk->dirty) {
-                        // std::cout << "Chunk is dirty" << std::endl;
                         chunk->generate_mesh();
                 } else {
-                        // std::cout << "Drawing chunk" << std::endl;
                         auto world_pos =
                             glm::vec3{Chunk::CHUNK_SIZE * chunk->chunk_x,
                                       Chunk::CHUNK_SIZE * chunk->chunk_y,
@@ -167,23 +139,37 @@ void Map::new_chunks_x(int dx, int camera_chunk_x, int camera_chunk_y,
         int removed_edge = (dx > 0) ? last_camera_chunk_x - RENDER_RADIUS
                                     : last_camera_chunk_x + RENDER_RADIUS;
 
+        std::vector<std::future<void>> futures;
+        futures.reserve(RENDER_DIAMETER * RENDER_DIAMETER);
+
         for (int z = start_z; z < RENDER_DIAMETER + start_z; z++) {
                 for (int y = start_y; y < RENDER_DIAMETER + start_y; y++) {
-                        auto removed = std::make_tuple(removed_edge, y, z);
+                        // clang-format off
+                        auto move_chunks = [this, added_edge, removed_edge, z, y]() {
+                                auto added = std::make_tuple(added_edge, y, z);
+                                auto removed = std::make_tuple(removed_edge, y, z);
 
-                        chunks.erase(removed);
+                                std::scoped_lock<std::mutex> lock(this->mutex);
 
-                        auto added = std::make_tuple(added_edge, y, z);
+                                chunks.erase(removed);
 
-                        if (!chunks.count(added)) {
-                                auto chunk =
-                                    std::make_shared<Chunk>(added_edge, y, z);
+                                if (!chunks.count(added)) {
+                                        auto chunk = std::make_shared<Chunk>(added_edge, y, z);
 
-                                chunk->generate_terrain(noise);
+                                        chunk->generate_terrain(noise);
 
-                                chunks.insert({added, chunk});
-                        }
+                                        chunks.insert({added, chunk});
+                                }
+                        };
+                        // clang-format on
+
+                        futures.emplace_back(
+                            std::async(std::launch::async, move_chunks));
                 }
+        }
+
+        for (auto &future : futures) {
+                future.get();
         }
 }
 
@@ -201,23 +187,37 @@ void Map::new_chunks_y(int dy, int camera_chunk_x, int camera_chunk_y,
         int removed_edge = (dy > 0) ? last_camera_chunk_y - RENDER_RADIUS
                                     : last_camera_chunk_y + RENDER_RADIUS;
 
+        std::vector<std::future<void>> futures;
+        futures.reserve(RENDER_DIAMETER * RENDER_DIAMETER);
+
         for (int z = start_z; z < RENDER_DIAMETER + start_z; z++) {
                 for (int x = start_x; x < RENDER_DIAMETER + start_x; x++) {
-                        auto removed = std::make_tuple(x, removed_edge, z);
+                        // clang-format off
+                        auto move_chunks = [this, added_edge, removed_edge, z, x]() {
+                                auto added = std::make_tuple(x, added_edge, z);
+                                auto removed = std::make_tuple(x, removed_edge, z);
 
-                        chunks.erase(removed);
+                                std::scoped_lock<std::mutex> lock(this->mutex);
 
-                        auto added = std::make_tuple(x, added_edge, z);
+                                chunks.erase(removed);
 
-                        if (!chunks.count(added)) {
-                                auto chunk =
-                                    std::make_shared<Chunk>(x, added_edge, z);
+                                if (!chunks.count(added)) {
+                                        auto chunk = std::make_shared<Chunk>(x, added_edge, z);
 
-                                chunk->generate_terrain(noise);
+                                        chunk->generate_terrain(noise);
 
-                                chunks.insert({added, chunk});
-                        }
+                                        chunks.insert({added, chunk});
+                                }
+                        };
+                        // clang-format on
+
+                        futures.emplace_back(
+                            std::async(std::launch::async, move_chunks));
                 }
+        }
+
+        for (auto &future : futures) {
+                future.get();
         }
 }
 
@@ -235,23 +235,36 @@ void Map::new_chunks_z(int dz, int camera_chunk_x, int camera_chunk_y,
         int removed_edge = (dz > 0) ? last_camera_chunk_z - RENDER_RADIUS
                                     : last_camera_chunk_z + RENDER_RADIUS;
 
+        std::vector<std::future<void>> futures;
+        futures.reserve(RENDER_DIAMETER * RENDER_DIAMETER);
+
         for (int y = start_y; y < RENDER_DIAMETER + start_y; y++) {
                 for (int x = start_x; x < RENDER_DIAMETER + start_x; x++) {
-                        auto removed = std::make_tuple(x, y, removed_edge);
+                        // clang-format off
+                        auto move_chunks = [this, added_edge, removed_edge, y, x]() {
+                                auto added = std::make_tuple(x, y, added_edge);
+                                auto removed = std::make_tuple(x, y, removed_edge);
 
-                        chunks.erase(removed);
+                                std::scoped_lock<std::mutex> lock(this->mutex);
 
-                        auto added = std::make_tuple(x, y, added_edge);
+                                chunks.erase(removed);
 
-                        if (!chunks.count(added)) {
-                                auto chunk =
-                                    std::make_shared<Chunk>(x, y, added_edge);
+                                if (!chunks.count(added)) {
+                                        auto chunk =
+                                                std::make_shared<Chunk>(x, y, added_edge);
 
-                                chunk->generate_terrain(noise);
+                                        chunk->generate_terrain(noise);
 
-                                chunks.insert({added, chunk});
-                        }
+                                        chunks.insert({added, chunk});
+                                }
+                        };
+
+                        futures.emplace_back(std::async(std::launch::async, move_chunks));
                 }
+        }
+
+        for (auto& future : futures) {
+                future.get();
         }
 }
 } // namespace kwnc
