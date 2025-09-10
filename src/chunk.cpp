@@ -138,8 +138,6 @@ Chunk::~Chunk() { delete[] blocks; }
 
 void Chunk::fill()
 {
-        std::scoped_lock<std::mutex> lock(mtx);
-
         for (int i = 0; i < CHUNK_SIZE_CUBED; ++i) {
                 blocks[i] = Block::DIRT;
         }
@@ -149,8 +147,6 @@ void Chunk::fill()
 
 void Chunk::generate_terrain(const FastNoiseLite &noise)
 {
-        std::scoped_lock<std::mutex> lock(mtx);
-
         for (int x = 0; x < CHUNK_SIZE; ++x) {
                 for (int z = 0; z < CHUNK_SIZE; ++z) {
                         int height = std::floor(
@@ -189,7 +185,6 @@ void Chunk::generate_terrain(const FastNoiseLite &noise)
 
 void Chunk::generate_mesh()
 {
-        std::scoped_lock<std::mutex> lock(mtx);
         std::vector<Block_Vertex> vertex_data;
 
         int x, y, z;

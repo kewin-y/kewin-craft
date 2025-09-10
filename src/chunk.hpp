@@ -35,7 +35,6 @@ public:
 
 private:
         Block *blocks;
-        mutable std::mutex mtx;
 
         static int convert_to_block_idx(int x, int y, int z);
         static void convert_to_pos_in_chunk(int i, int *x, int *y, int *z);
