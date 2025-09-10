@@ -17,7 +17,8 @@ public:
         const float sensitivity = 0.2f;
         const float speed = 5.5f;
 
-        Camera();
+        Camera() = default;
+        ~Camera() = default;
 
         void update(const Window &win);
         float *get_vp_ptr();

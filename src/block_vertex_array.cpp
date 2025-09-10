@@ -6,11 +6,8 @@
 
 namespace kwnc
 {
-Block_Vertex_Array::Block_Vertex_Array()
+void Block_Vertex_Array::init()
 {
-}
-
-void Block_Vertex_Array::init() {
         vertex_count = 0;
 
         // Setup VAO
@@ -41,8 +38,10 @@ void Block_Vertex_Array::init() {
 
 Block_Vertex_Array::~Block_Vertex_Array()
 {
-        glDeleteBuffers(1, &vbo);
-        glDeleteVertexArrays(1, &id);
+        if (vbo != 0)
+                glDeleteBuffers(1, &vbo);
+        if (id != 0)
+                glDeleteVertexArrays(1, &id);
 }
 
 void Block_Vertex_Array::buffer_data(size_t size, int vertex_count,
@@ -55,7 +54,6 @@ void Block_Vertex_Array::buffer_data(size_t size, int vertex_count,
         glBufferData(GL_ARRAY_BUFFER, size, vertex_data, GL_STATIC_DRAW);
         glBindVertexArray(0);
         glBindBuffer(GL_ARRAY_BUFFER, 0);
-
 }
 
 void Block_Vertex_Array::draw()

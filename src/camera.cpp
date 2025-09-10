@@ -5,8 +5,6 @@
 
 namespace kwnc
 {
-Camera::Camera() : Cursor() {}
-
 void Camera::update(const Window &win)
 {
         handle_keyboard(win);

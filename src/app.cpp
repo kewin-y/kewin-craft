@@ -16,8 +16,18 @@ App::App()
 {
         glfwSetInputMode(window.get_glfw_window(), GLFW_CURSOR,
                          GLFW_CURSOR_DISABLED);
-
+        // Disable vsync
+        glfwSwapInterval(0);
         glEnable(GL_DEPTH_TEST);
+
+        auto start = std::chrono::system_clock::now();
+        map.setup(camera.position);
+        auto end = std::chrono::system_clock::now();
+        std::chrono::duration<double> elapsed = end - start;
+        std::cout << "map.setup took: " << elapsed.count() << "s" << std::endl;
+
+        shader.use();
+        shader.uniform_i("v_texture", 0);
 }
 
 void App::run()
@@ -29,19 +39,6 @@ void App::run()
         float fps = 0.0f;
         int frames = 0;
 
-        glfwSwapInterval(0);
-
-        auto start = std::chrono::system_clock::now();
-        map.setup(camera.position);
-        auto end = std::chrono::system_clock::now();
-        std::chrono::duration<double> elapsed = end - start;
-        std::cout << "map.setup took: " << elapsed.count() << "s" << std::endl;
-
-        shader.use();
-        shader.uniform_i("v_texture", 0);
-
-// #define DONT_DIE
-#ifndef DONT_DIE
         while (!glfwWindowShouldClose(window.get_glfw_window())) {
                 glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
                 glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -86,7 +83,6 @@ void App::run()
                 glfwSwapBuffers(window.get_glfw_window());
                 glfwPollEvents();
         }
-#endif
 }
 
 void App::handle_keyboard()

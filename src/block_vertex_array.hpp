@@ -9,7 +9,7 @@ namespace kwnc
 class Block_Vertex_Array
 {
 public:
-        Block_Vertex_Array();
+        Block_Vertex_Array() = default;
         ~Block_Vertex_Array();
 
         void init();
@@ -18,9 +18,10 @@ public:
                          Block_Vertex *vertex_data);
 
         bool initialized = false;
+
 private:
-        unsigned int id;
-        unsigned int vbo;
+        unsigned int id{0};
+        unsigned int vbo{0};
         int vertex_count;
 };
 } // namespace kwnc

@@ -17,6 +17,8 @@ static constexpr int RENDER_DIAMETER = 2 * RENDER_RADIUS + 1;
 static constexpr int MAX_LOADED_CHUNKS =
     RENDER_DIAMETER * RENDER_DIAMETER * RENDER_DIAMETER;
 
+static std::mutex s_chunks_mtx;
+
 namespace kwnc
 {
 size_t
@@ -34,7 +36,6 @@ Map::Map() : noise{}
         noise.SetSeed(0);
 }
 
-static std::mutex s_chunks_mtx;
 
 #define MULTITHREADING
 
