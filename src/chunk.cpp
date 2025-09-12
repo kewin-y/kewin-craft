@@ -7,7 +7,8 @@
 #include <iostream>
 #include <mutex>
 #include <thread>
-#include <vector>
+#define GLM_ENABLE_EXPERIMENTAL
+#include <glm/ext.hpp>
 
 // clang-format off
 static constexpr uint8_t face_nz[][3] = {
@@ -142,7 +143,7 @@ void Chunk::fill()
                 blocks[i] = Block::DIRT;
         }
 
-        dirty = true;
+        state = Chunk_State::DIRTY;
 }
 
 void Chunk::generate_terrain(const FastNoiseLite &noise)
@@ -168,7 +169,7 @@ void Chunk::generate_terrain(const FastNoiseLite &noise)
                 }
         }
 
-        dirty = true;
+        state = Chunk_State::DIRTY;
 }
 
 // void Chunk::set_voxel(int x, int y, int z, Block type)
@@ -185,8 +186,6 @@ void Chunk::generate_terrain(const FastNoiseLite &noise)
 
 void Chunk::generate_mesh()
 {
-        std::vector<Block_Vertex> vertex_data;
-
         int x, y, z;
         size_t vertex_count, size;
 
@@ -292,16 +291,29 @@ void Chunk::generate_mesh()
                 }
         }
 
-        vertex_count = vertex_data.size();
-        size = vertex_count * sizeof(Block_Vertex);
+        state = Chunk_State::READY;
+}
 
-        if (!vertex_array.initialized) {
+void Chunk::draw()
+{
+        if (!vertex_array.initialized)
                 vertex_array.init();
+
+        // Ready to draw, vertex array not initialized
+        if (state == Chunk_State::READY) {
+
+                int count = vertex_data.size();
+                size_t size = sizeof(Block_Vertex) * count;
+
+                vertex_array.buffer_data(size, count, vertex_data.data());
+
+                vertex_data.resize(0);
         }
 
-        vertex_array.buffer_data(size, vertex_count, vertex_data.data());
 
-        dirty = false;
+        vertex_array.draw();
+
+        state = Chunk_State::DRAWN;
 }
 
 int Chunk::convert_to_block_idx(int x, int y, int z)

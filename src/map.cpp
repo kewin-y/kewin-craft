@@ -2,13 +2,13 @@
 #include "FastNoiseLite.h"
 #include "chunk.hpp"
 #include <atomic>
+#include <chrono>
 #include <cstdlib>
 #include <future>
 #include <glm/common.hpp>
 #include <iostream>
 #include <memory>
 #include <mutex>
-#include <thread>
 #include <tuple>
 #include <vector>
 
@@ -95,6 +95,8 @@ void Map::update(const glm::vec3 &camera_position)
                 return;
         }
 
+        auto start = std::chrono::system_clock::now();
+
         dx = camera_chunk_x - last_camera_chunk_x;
         dy = camera_chunk_y - last_camera_chunk_y;
         dz = camera_chunk_z - last_camera_chunk_z;
@@ -106,23 +108,62 @@ void Map::update(const glm::vec3 &camera_position)
         last_camera_chunk_x = camera_chunk_x;
         last_camera_chunk_y = camera_chunk_y;
         last_camera_chunk_z = camera_chunk_z;
+
+        auto end = std::chrono::system_clock::now();
+        std::chrono::duration<double> elapsed = end - start;
+        // std::cout << "map.update took: " << elapsed.count() << "s" <<
+        // std::endl;
 }
+
+static void mesh_chunk(std::shared_ptr<Chunk> chunk) { chunk->generate_mesh(); }
 
 void Map::render(const Shader &shader)
 {
+        auto start = std::chrono::system_clock::now();
+        bool meshed_new_chunks = false;
+        std::vector<std::future<void>> futures;
+        futures.reserve(MAX_LOADED_CHUNKS);
 
+        // Use multithreading to mesh chunks
         for (auto &[pos, chunk] : chunks) {
-                if (chunk->dirty) {
-                        chunk->generate_mesh();
-                } else {
+                // This code should be safe ...
+                // dirty isn't accessed anywhere after this so there should be
+                // no data races :pray:
+                if (chunk->state == Chunk_State::DIRTY) {
+                        meshed_new_chunks = true;
+
+                        // Structs in lambda capture only allowed in C++20
+                        futures.emplace_back(
+                            std::async(std::launch::async, mesh_chunk, chunk));
+                }
+        }
+
+        // Wait for threads to finish execution
+        for (auto &future : futures) {
+                future.get();
+        }
+
+        // Ensure drawing happens on the main thread
+        for (auto &[pos, chunk] : chunks) {
+                if (chunk->state != Chunk_State::DIRTY) {
                         auto world_pos =
                             glm::vec3{Chunk::CHUNK_SIZE * chunk->chunk_x,
                                       Chunk::CHUNK_SIZE * chunk->chunk_y,
                                       Chunk::CHUNK_SIZE * chunk->chunk_z};
                         shader.uniform_v3("world_pos", &world_pos[0]);
-                        chunk->vertex_array.draw();
+                        chunk->draw();
                 }
         }
+
+        auto end = std::chrono::system_clock::now();
+        std::chrono::duration<double> elapsed = end - start;
+
+        if (meshed_new_chunks)
+                std::cout << "map.render with meshing new chunks took: "
+                          << elapsed.count() << "s" << std::endl;
+        // else
+        //         std::cout << "map.render without meshing new chunks took: "
+        //                   << elapsed.count() << "s" << std::endl;
 }
 
 void Map::new_chunks_x(int dx, int camera_chunk_x, int camera_chunk_y,

@@ -2,14 +2,23 @@
 #define CHUNK_HPP
 
 #include "FastNoiseLite.h"
+#include "block.hpp"
 #include "block_vertex_array.hpp"
 #include <atomic>
 #include <cstdint>
 #include <glm/glm.hpp>
 #include <mutex>
+#include <vector>
 
 namespace kwnc
 {
+
+enum class Chunk_State : uint8_t {
+        DIRTY,
+        READY,
+        DRAWN,
+};
+
 class Chunk
 {
 public:
@@ -20,9 +29,8 @@ public:
         static constexpr int TERRAIN_CONSTANT = 64;
 
         int chunk_x, chunk_y, chunk_z;
-        Block_Vertex_Array vertex_array;
 
-        bool dirty = false;
+        Chunk_State state = Chunk_State::DIRTY;
 
         Chunk(int x, int y, int z);
         ~Chunk();
@@ -32,9 +40,12 @@ public:
         // void set_voxel(int x, int y, int z, Block type);
         // void reset();
         void generate_mesh();
+        void draw();
 
 private:
         Block *blocks;
+        std::vector<Block_Vertex> vertex_data;
+        Block_Vertex_Array vertex_array;
 
         static int convert_to_block_idx(int x, int y, int z);
         static void convert_to_pos_in_chunk(int i, int *x, int *y, int *z);
