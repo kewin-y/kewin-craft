@@ -83,7 +83,7 @@ void Camera::update_vp(const Window &win)
 
         view = glm::lookAt(position, position + direction, up);
         projection =
-            glm::perspective(glm::radians(FOV), win.aspect, 0.1f, 100.0f);
+            glm::perspective(glm::radians(FOV), win.aspect, 0.1f, 200.0f);
 
         vp = projection * view;
 }
