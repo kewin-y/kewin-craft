@@ -1,59 +1,69 @@
 {
-  description = "Can't wait to";
+  description = "Minecraft Clone";
 
   inputs = {
-    flake-parts.url = "github:hercules-ci/flake-parts";
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
   };
 
-  outputs = inputs @ {flake-parts, ...}:
-    flake-parts.lib.mkFlake {inherit inputs;} {
-      systems = ["x86_64-linux" "aarch64-linux" "aarch64-darwin" "x86_64-darwin"];
-      perSystem = {
-        config,
-        self',
-        inputs',
-        pkgs,
-        system,
-        ...
-      }: {
-        devShells.default = pkgs.mkShell {
-          buildInputs = [
-            pkgs.bear
-            pkgs.valgrind-light
-            pkgs.clang-tools
-            pkgs.cmake
-            pkgs.pkg-config
+  outputs = {nixpkgs, ...}: let
+    forAllSystems = nixpkgs.lib.genAttrs [
+      "aarch64-linux"
+      "x86_64-linux"
+      "x86_64-darwin"
+      "aarch64-darwin"
+    ];
+  in {
+    formatter = forAllSystems (
+      system: let
+        pkgs = nixpkgs.legacyPackages.${system};
+      in
+        pkgs.alejandra
+    );
+    devShells = forAllSystems (
+      system: let
+        pkgs = nixpkgs.legacyPackages.${system};
+      in {
+        default = pkgs.mkShell {
+          buildInputs = builtins.attrValues {
+            inherit
+              (pkgs)
+              valgrind-light
+              clang-tools
+              cmake
+              pkg-config
+              wayland
+              libffi
+              libxkbcommon
+              wayland-scanner
+              git
+              ;
 
-            pkgs.xorg.libX11
-            pkgs.xorg.libXrandr
-            pkgs.xorg.libXi
-            pkgs.xorg.libXinerama
-            pkgs.xorg.libXcursor
-            pkgs.wayland
-            pkgs.libffi
-            pkgs.libxkbcommon
-            pkgs.wayland-scanner
-          ];
+            inherit
+              (pkgs.xorg)
+              libX11
+              libXrandr
+              libXi
+              libXinerama
+              libXcursor
+              ;
+          };
 
-          LD_LIBRARY_PATH = pkgs.lib.makeLibraryPath [
-            # pkgs.xorg.libX11
-            # pkgs.xorg.libXrandr
-            # pkgs.xorg.libXi
-            # pkgs.xorg.libXinerama
-            # pkgs.xorg.libXcursor
-            # TODO: Figure out X11 libs (will the compiled binary even run on X11?)
-            pkgs.wayland
-            pkgs.libxkbcommon
-            pkgs.libGL
-            pkgs.libglvnd
-            pkgs.mesa
-          ];
+          LD_LIBRARY_PATH = pkgs.lib.makeLibraryPath (builtins.attrValues {
+            inherit
+              (pkgs)
+              wayland
+              libxkbcommon
+              libGL
+              libglvnd
+              mesa
+              ;
+          });
 
           shellHook = ''
             export SHELL='${pkgs.mksh}/bin/mksh'
           '';
         };
-      };
-    };
+      }
+    );
+  };
 }
