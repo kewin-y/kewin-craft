@@ -11,9 +11,9 @@ Window::Window(int w, int h, const std::string &n)
         aspect = (float)width / (float)height;
 
         glfwSetErrorCallback([](int, const char *desc) {
-                        std::cerr << desc << "\n";
-                        std::exit(EXIT_FAILURE);
-                        });
+                std::cerr << desc << "\n";
+                std::exit(EXIT_FAILURE);
+        });
         glfwInit();
         glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
         glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);

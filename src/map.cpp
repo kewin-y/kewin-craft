@@ -258,12 +258,14 @@ void Map::new_chunks_z(int dz, int camera_chunk_x, int camera_chunk_y,
                                         chunks.insert({added, chunk});
                                 }
                         };
+                        // clang-format on
 
-                        futures.emplace_back(std::async(std::launch::async, move_chunks));
+                        futures.emplace_back(
+                            std::async(std::launch::async, move_chunks));
                 }
         }
 
-        for (auto& future : futures) {
+        for (auto &future : futures) {
                 future.get();
         }
 }

@@ -11,8 +11,11 @@ void Block_Vertex_Array::init()
         vertex_count = 0;
 
         // Setup VAO
+        // Generate
         glGenVertexArrays(1, &id);
         glGenBuffers(1, &vbo);
+
+        // Bind
         glBindVertexArray(id);
         glBindBuffer(GL_ARRAY_BUFFER, vbo);
 
@@ -30,6 +33,8 @@ void Block_Vertex_Array::init()
         glVertexAttribIPointer(2, 1, GL_UNSIGNED_INT, stride,
                                (void *)(5 * sizeof(float)));
         glEnableVertexAttribArray(2);
+
+        // Unbind
         glBindVertexArray(0);
         glBindBuffer(GL_ARRAY_BUFFER, 0);
 
@@ -51,15 +56,22 @@ void Block_Vertex_Array::buffer_data(size_t size, int vertex_count,
 
         glBindVertexArray(id);
         glBindBuffer(GL_ARRAY_BUFFER, vbo);
+
         glBufferData(GL_ARRAY_BUFFER, size, vertex_data, GL_STATIC_DRAW);
+
         glBindVertexArray(0);
         glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 
 void Block_Vertex_Array::draw()
 {
+        // TODO: Should this error?
+        if (!initialized) return;
+
         glBindVertexArray(id);
+
         glDrawArrays(GL_TRIANGLES, 0, vertex_count);
+
         glBindVertexArray(0);
 }
 } // namespace kwnc

@@ -190,6 +190,7 @@ void Chunk::generate_mesh()
         int x, y, z;
         size_t vertex_count, size;
 
+        // FIXME: Why 4096? No magic numbers please
         vertex_data.reserve(4096);
 
         for (int i = 0; i < CHUNK_SIZE_CUBED; ++i) {
