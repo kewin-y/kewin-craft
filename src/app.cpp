@@ -68,7 +68,7 @@ void App::run()
 #endif
 
                 // Bind Textures
-                glActiveTexture(0);
+                glActiveTexture(GLTEXTURE0);
                 texture.bind();
 
                 // Use Shader

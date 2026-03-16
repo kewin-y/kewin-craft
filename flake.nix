@@ -35,7 +35,6 @@
               libffi
               libxkbcommon
               wayland-scanner
-              git
               ;
 
             inherit
