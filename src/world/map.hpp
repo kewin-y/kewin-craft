@@ -2,10 +2,11 @@
 #define MAP_HPP
 
 #include "FastNoiseLite.h"
-#include "chunk.hpp"
-#include "shader.hpp"
+#include "graphics/shader.hpp"
+#include "world/chunk.hpp"
 #include <glm/glm.hpp>
 #include <memory>
+#include <mutex>
 #include <tuple>
 #include <unordered_map>
 

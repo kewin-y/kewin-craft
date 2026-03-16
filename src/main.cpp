@@ -1,5 +1,5 @@
+#include "app/application.hpp"
 #include "config.h"
-#include "app.hpp"
 #include <iostream>
 #include <thread>
 

@@ -41,21 +41,41 @@ add_subdirectory(external/glad)
 add_subdirectory(external/FastNoiseLite)
 add_subdirectory(external/stb_image)
 
+set(APP_SOURCES
+    src/app/application.cpp
+)
+
+set(PLATFORM_SOURCES
+    src/platform/cursor.cpp
+    src/platform/window.cpp
+)
+
+set(GRAPHICS_SOURCES
+    src/graphics/block_vertex_array.cpp
+    src/graphics/shader.cpp
+    src/graphics/texture.cpp
+)
+
+set(GAMEPLAY_SOURCES
+    src/gameplay/camera.cpp
+)
+
+set(WORLD_SOURCES
+    src/world/chunk.cpp
+    src/world/map.cpp
+)
+
 set(SOURCE_FILES
-    src/app.cpp
-    src/block_vertex_array.cpp
-    src/camera.cpp
-    src/chunk.cpp
-    src/cursor.cpp
+    ${APP_SOURCES}
+    ${PLATFORM_SOURCES}
+    ${GRAPHICS_SOURCES}
+    ${GAMEPLAY_SOURCES}
+    ${WORLD_SOURCES}
     src/main.cpp
-    src/map.cpp
-    src/shader.cpp
-    src/texture.cpp
-    src/window.cpp
 )
 
 add_executable(${PROJECT_NAME} ${SOURCE_FILES})
 
-target_include_directories(${PROJECT_NAME} PUBLIC ${PROJECT_BINARY_DIR})
+target_include_directories(${PROJECT_NAME} PUBLIC ${PROJECT_BINARY_DIR} ${PROJECT_SOURCE_DIR}/src)
 
 target_link_libraries(${PROJECT_NAME} PRIVATE glm::glm glad glfw FastNoiseLite stb_image)

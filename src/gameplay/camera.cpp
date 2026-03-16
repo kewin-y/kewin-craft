@@ -1,4 +1,4 @@
-#include "camera.hpp"
+#include "gameplay/camera.hpp"
 #include <glm/geometric.hpp>
 #define GLM_ENABLE_EXPERIMENTAL
 #include <glm/ext.hpp>

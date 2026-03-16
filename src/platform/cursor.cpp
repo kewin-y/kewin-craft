@@ -1,4 +1,4 @@
-#include "cursor.hpp"
+#include "platform/cursor.hpp"
 #include <GLFW/glfw3.h>
 #include <algorithm>
 #include <vector>

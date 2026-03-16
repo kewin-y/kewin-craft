@@ -1,4 +1,4 @@
-#include "shader.hpp"
+#include "graphics/shader.hpp"
 #include "glad/gl.h"
 #include <fstream>
 #include <iostream>
@@ -106,6 +106,5 @@ void Shader::uniform_i(const std::string &name, int i) const
 {
         glUniform1i(glGetUniformLocation(id, name.c_str()), i);
 }
-
 
 } // namespace kwnc

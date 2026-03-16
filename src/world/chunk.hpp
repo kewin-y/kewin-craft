@@ -2,7 +2,8 @@
 #define CHUNK_HPP
 
 #include "FastNoiseLite.h"
-#include "block_vertex_array.hpp"
+#include "graphics/block_vertex_array.hpp"
+#include "world/block.hpp"
 #include <atomic>
 #include <cstdint>
 #include <glm/glm.hpp>

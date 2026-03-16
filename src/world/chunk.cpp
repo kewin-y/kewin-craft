@@ -1,6 +1,6 @@
-#include "chunk.hpp"
+#include "world/chunk.hpp"
 #include "FastNoiseLite.h"
-#include "block.hpp"
+#include "world/block.hpp"
 #include <atomic>
 #include <cstdint>
 #include <glm/common.hpp>

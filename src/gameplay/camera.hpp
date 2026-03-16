@@ -1,8 +1,8 @@
 #ifndef CAMERA_HPP
 #define CAMERA_HPP
 
-#include "cursor.hpp"
-#include "window.hpp"
+#include "platform/cursor.hpp"
+#include "platform/window.hpp"
 #include <glm/fwd.hpp>
 #include <glm/glm.hpp>
 

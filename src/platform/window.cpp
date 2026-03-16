@@ -1,5 +1,5 @@
-#include "window.hpp"
-#include "cursor.hpp"
+#include "platform/window.hpp"
+#include "platform/cursor.hpp"
 #include <GLFW/glfw3.h>
 #include <iostream>
 

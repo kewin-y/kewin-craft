@@ -1,11 +1,11 @@
 #ifndef APP_HPP
 #define APP_HPP
 
-#include "texture.hpp"
-#include "window.hpp"
-#include "shader.hpp"
-#include "camera.hpp"
-#include "map.hpp"
+#include "gameplay/camera.hpp"
+#include "graphics/shader.hpp"
+#include "graphics/texture.hpp"
+#include "platform/window.hpp"
+#include "world/map.hpp"
 #include <glm/glm.hpp>
 
 namespace kwnc

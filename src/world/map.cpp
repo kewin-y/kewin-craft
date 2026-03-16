@@ -1,6 +1,6 @@
-#include "map.hpp"
+#include "world/map.hpp"
 #include "FastNoiseLite.h"
-#include "chunk.hpp"
+#include "world/chunk.hpp"
 #include <atomic>
 #include <cstdlib>
 #include <future>

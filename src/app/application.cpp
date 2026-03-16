@@ -1,4 +1,4 @@
-#include "app.hpp"
+#include "app/application.hpp"
 #include "GLFW/glfw3.h"
 #include "config.h"
 #include "glad/gl.h"
@@ -68,7 +68,7 @@ void App::run()
 #endif
 
                 // Bind Textures
-                glActiveTexture(GLTEXTURE0);
+                glActiveTexture(GL_TEXTURE0);
                 texture.bind();
 
                 // Use Shader

@@ -1,6 +1,6 @@
-#include "block_vertex_array.hpp"
-#include "block.hpp"
+#include "graphics/block_vertex_array.hpp"
 #include "glad/gl.h"
+#include "world/block.hpp"
 #include <cstddef>
 #include <iostream>
 
@@ -66,7 +66,8 @@ void Block_Vertex_Array::buffer_data(size_t size, int vertex_count,
 void Block_Vertex_Array::draw()
 {
         // TODO: Should this error?
-        if (!initialized) return;
+        if (!initialized)
+                return;
 
         glBindVertexArray(id);
 

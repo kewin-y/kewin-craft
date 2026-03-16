@@ -1,4 +1,4 @@
-#include "texture.hpp"
+#include "graphics/texture.hpp"
 #include <stb_image.h>
 
 static GLenum get_texture_format(int num_channels)

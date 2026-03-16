@@ -1,7 +1,7 @@
 #ifndef BLOCK_VERTEX_ARRAY_HPP
 #define BLOCK_VERTEX_ARRAY_HPP
 
-#include "block.hpp"
+#include "world/block.hpp"
 #include <cstddef>
 
 namespace kwnc
