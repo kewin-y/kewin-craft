@@ -35,15 +35,11 @@
               libffi
               libxkbcommon
               wayland-scanner
-              ;
-
-            inherit
-              (pkgs.xorg)
-              libX11
-              libXrandr
-              libXi
-              libXinerama
-              libXcursor
+              libx11
+              libxrandr
+              libxi
+              libxinerama
+              libxcursor
               ;
           };
 
@@ -57,10 +53,6 @@
               mesa
               ;
           });
-
-          shellHook = ''
-            export SHELL='${pkgs.mksh}/bin/mksh'
-          '';
         };
       }
     );
