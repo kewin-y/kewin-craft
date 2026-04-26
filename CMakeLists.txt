@@ -20,7 +20,6 @@ if(PRODUCTION)
 else()
         set(ASSETS_PATH "\"${PROJECT_SOURCE_DIR}/assets/\"")
 endif()
-
 configure_file(config.h.in config.h)
 
 FetchContent_Declare(
@@ -46,7 +45,6 @@ set(APP_SOURCES
 )
 
 set(PLATFORM_SOURCES
-    src/platform/cursor.cpp
     src/platform/window.cpp
 )
 

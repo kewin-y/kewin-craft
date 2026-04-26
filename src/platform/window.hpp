@@ -3,6 +3,7 @@
 
 #include "glad/gl.h"
 #include <GLFW/glfw3.h>
+#include <functional>
 #include <string>
 
 namespace kwnc
@@ -10,22 +11,28 @@ namespace kwnc
 class Window
 {
 public:
-        int width;
-        int height;
-        float aspect;
-        std::string name;
+  int width;
+  int height;
+  float aspect;
+  float delta_time;
 
-        float delta_time;
+  std::string name;
 
-        Window(int w, int h, const std::string &n);
-        ~Window();
+  Window(int w, int h, const std::string &n);
+  ~Window();
 
-        GLFWwindow *get_glfw_window() const;
+  void set_cursor_pos_cb(std::function<void(double, double)> cb);
+  GLFWwindow *get_glfw_window() const;
 
 private:
-        GLFWwindow *glfw_window;
+  GLFWwindow *glfw_window;
+  std::function<void(double, double)> cursor_pos_cb;
 
-        static void fb_size_callback(GLFWwindow *win, int width, int height);
+  // Hardcoded framebuffer size callback because it will probably stay like this
+  void fb_size_cb(int width, int height);
+
+  static void _fb_size_cb(GLFWwindow *win, int width, int height);
+  static void _cursor_pos_cb(GLFWwindow *win, double x_pos, double y_pos);
 };
 } // namespace kwnc
 

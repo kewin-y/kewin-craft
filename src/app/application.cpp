@@ -2,10 +2,10 @@
 #include "GLFW/glfw3.h"
 #include "config.h"
 #include "glad/gl.h"
-#include <chrono>
+// #include <chrono>
 #include <glm/ext.hpp>
 #include <glm/glm.hpp>
-#include <iostream>
+// #include <iostream>
 
 namespace kwnc
 {
@@ -14,81 +14,85 @@ App::App()
       shader{ASSETS_PATH "shaders/vert.glsl", ASSETS_PATH "shaders/frag.glsl"},
       texture{ASSETS_PATH "textures/atlas.png"}, camera{}, map{}
 {
-        glfwSetInputMode(window.get_glfw_window(), GLFW_CURSOR,
-                         GLFW_CURSOR_DISABLED);
-        // Disable vsync
-        glfwSwapInterval(0);
-        glEnable(GL_DEPTH_TEST);
+  glfwSetInputMode(window.get_glfw_window(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+  // Disable vsync
+  glfwSwapInterval(0);
+  glEnable(GL_DEPTH_TEST);
 
-        auto start = std::chrono::system_clock::now();
-        map.setup(camera.position);
-        auto end = std::chrono::system_clock::now();
-        std::chrono::duration<double> elapsed = end - start;
-        std::cout << "map.setup took: " << elapsed.count() << "s" << std::endl;
+  // TODO: Make an actual logger class
+  // auto start = std::chrono::system_clock::now();
+  map.setup(camera.position);
+  // auto end = std::chrono::system_clock::now();
+  // std::chrono::duration<double> elapsed = end - start;
+  // std::cout << "map.setup took: " << elapsed.count() << "s" << std::endl;
 
-        shader.use();
-        shader.uniform_i("v_texture", 0);
+  shader.use();
+  shader.uniform_i("v_texture", 0);
+
+  // TODO: Ideally, this should be managed via a game state manager
+  window.set_cursor_pos_cb([this](double x_pos, double y_pos) {
+    this->camera.cursor_pos_cb(x_pos, y_pos);
+  });
 }
 
 void App::run()
 {
-        float last_time = 0.0f;
-        float current_time = 0.0f;
+  float last_time = 0.0f;
+  float current_time = 0.0f;
 
-        float last_fps_calc = 0.0f;
-        float fps = 0.0f;
-        int frames = 0;
+  float last_fps_calc = 0.0f;
+  float fps = 0.0f;
+  int frames = 0;
 
-        while (!glfwWindowShouldClose(window.get_glfw_window())) {
-                glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
-                glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+  while (!glfwWindowShouldClose(window.get_glfw_window())) {
+    glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-                // Calculate delta_time
-                current_time = glfwGetTime();
-                window.delta_time = current_time - last_time;
-                last_time = current_time;
+    // Calculate delta_time
+    current_time = glfwGetTime();
+    window.delta_time = current_time - last_time;
+    last_time = current_time;
 
-                // Calculate FPS
-                frames++;
+    // Calculate FPS
+    frames++;
 
-                if (current_time - last_fps_calc > 0.25) {
-                        fps = (float)frames / (current_time - last_fps_calc);
-                        frames = 0;
-                        last_fps_calc = current_time;
-                }
+    if (current_time - last_fps_calc > 0.25) {
+      fps = (float)frames / (current_time - last_fps_calc);
+      frames = 0;
+      last_fps_calc = current_time;
+    }
 
-                // std::cout << "FPS: " << fps << "\n";
+    // std::cout << "FPS: " << fps << "\n";
 
-                // Update game objects
-                handle_keyboard();
-                camera.update(window);
+    // Update game objects
+    handle_keyboard();
+    camera.update(window);
 
 #ifndef DONT_GENERATE_NEW_CHUNKS
-                map.update(camera.position);
+    map.update(camera.position);
 #endif
 
-                // Bind Textures
-                glActiveTexture(GL_TEXTURE0);
-                texture.bind();
+    // Bind Textures
+    glActiveTexture(GL_TEXTURE0);
+    texture.bind();
 
-                // Use Shader
-                shader.use();
-                // Update Uniforms
-                shader.uniform_m4("mvp", camera.get_vp_ptr());
+    // Use Shader
+    shader.use();
+    // Update Uniforms
+    shader.uniform_m4("mvp", camera.get_vp_ptr());
 
-                // RENDER
-                map.render(shader);
+    // RENDER
+    map.render(shader);
 
-                glfwSwapBuffers(window.get_glfw_window());
-                glfwPollEvents();
-        }
+    glfwSwapBuffers(window.get_glfw_window());
+    glfwPollEvents();
+  }
 }
 
 void App::handle_keyboard()
 {
-        if (glfwGetKey(window.get_glfw_window(), GLFW_KEY_ESCAPE) ==
-            GLFW_PRESS) {
-                glfwSetWindowShouldClose(window.get_glfw_window(), true);
-        }
+  if (glfwGetKey(window.get_glfw_window(), GLFW_KEY_ESCAPE) == GLFW_PRESS) {
+    glfwSetWindowShouldClose(window.get_glfw_window(), true);
+  }
 }
 } // namespace kwnc

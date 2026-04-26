@@ -13,21 +13,21 @@ namespace kwnc
 class App
 {
 public:
-        static constexpr int WIDTH = 800;
-        static constexpr int HEIGHT = 600;
+  static constexpr int WIDTH = 800;
+  static constexpr int HEIGHT = 600;
 
-        App();
+  App();
 
-        void run();
+  void run();
 
 private:
-        Window window;
-        const Shader shader;
-        const Texture texture;
-        Camera camera;
-        Map map;
+  Window window;
+  const Shader shader;
+  const Texture texture;
+  Camera camera;
+  Map map;
 
-        void handle_keyboard();
+  void handle_keyboard();
 };
 } // namespace kwnc
 
