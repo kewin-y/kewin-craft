@@ -4,27 +4,23 @@
 #include "FastNoiseLite.h"
 #include "graphics/shader.hpp"
 #include "world/chunk.hpp"
+#include "world/chunk_coordinate.hpp"
 #include <glm/glm.hpp>
 #include <memory>
 #include <mutex>
-#include <tuple>
 #include <unordered_map>
 
 namespace kwnc
 {
 
-struct chunk_coordinate_hash {
-  size_t operator()(const std::tuple<int, int, int> &coords) const;
-};
-using chunk_map =
-    std::unordered_map<std::tuple<int, int, int>, std::shared_ptr<Chunk>,
-                       chunk_coordinate_hash>;
+using Chunk_Map = std::unordered_map<Chunk_Coordinate, std::shared_ptr<Chunk>,
+                                     Chunk_Coordinate_Hasher>;
 class Map
 {
 public:
   Map();
   ~Map() = default;
-  chunk_map chunks;
+  Chunk_Map chunks;
 
   void setup(const glm::vec3 &camera_position);
   void update(const glm::vec3 &camera_position);
@@ -40,6 +36,11 @@ private:
                     int camera_chunk_z);
   void new_chunks_z(int dz, int camera_chunk_x, int camera_chunk_y,
                     int camera_chunk_z);
+
+  static constexpr int RENDER_RADIUS = 3;
+  static constexpr int RENDER_DIAMETER = 2 * RENDER_RADIUS + 1;
+  static constexpr int MAX_LOADED_CHUNKS =
+      RENDER_DIAMETER * RENDER_DIAMETER * RENDER_DIAMETER;
 };
 } // namespace kwnc
 

@@ -5,7 +5,7 @@
 #include "graphics/shader.hpp"
 #include "graphics/texture.hpp"
 #include "platform/window.hpp"
-#include "world/map.hpp"
+#include "world/world.hpp"
 #include <glm/glm.hpp>
 
 namespace kwnc

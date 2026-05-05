@@ -60,7 +60,8 @@ set(GAMEPLAY_SOURCES
 
 set(WORLD_SOURCES
     src/world/chunk.cpp
-    src/world/map.cpp
+    src/world/world.cpp
+    src/world/chunk_coordinate.hpp
 )
 
 set(SOURCE_FILES

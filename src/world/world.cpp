@@ -1,32 +1,21 @@
-#include "world/map.hpp"
+#include "world/world.hpp"
 #include "FastNoiseLite.h"
 #include "world/chunk.hpp"
-#include <cstdlib>
+#include "world/chunk_coordinate.hpp"
 #include <future>
 #include <glm/common.hpp>
 #include <memory>
 #include <mutex>
-#include <tuple>
 #include <vector>
 
-static constexpr int RENDER_RADIUS = 3;
-static constexpr int RENDER_DIAMETER = 2 * RENDER_RADIUS + 1;
-static constexpr int MAX_LOADED_CHUNKS =
-    RENDER_DIAMETER * RENDER_DIAMETER * RENDER_DIAMETER;
 
 namespace kwnc
 {
-size_t
-chunk_coordinate_hash::operator()(const std::tuple<int, int, int> &coords) const
-{
-  return (std::hash<int>{}(std::get<0>(coords))) ^
-         ((std::hash<int>{}(std::get<1>(coords))) ^
-          (std::hash<int>{}(std::get<2>(coords)) << 1) << 1);
-}
 Map::Map() : noise{}
 {
   chunks.reserve(MAX_LOADED_CHUNKS);
   noise.SetNoiseType(FastNoiseLite::NoiseType_Perlin);
+
   // TODO: Generate Seed
   noise.SetSeed(0);
 }
@@ -54,8 +43,9 @@ void Map::setup(const glm::vec3 &camera_position)
   for (int z = start_z; z < RENDER_DIAMETER + start_z; z++) {
     for (int y = start_y; y < RENDER_DIAMETER + start_y; y++) {
       for (int x = start_x; x < RENDER_DIAMETER + start_x; x++) {
+
         auto init_chunk = [this, x, y, z]() {
-          auto key = std::make_tuple(x, y, z);
+          auto key = Chunk_Coordinate{x, y, z};
           auto chunk = std::make_shared<Chunk>(x, y, z);
           chunk->generate_terrain(this->noise);
 
@@ -137,8 +127,8 @@ void Map::new_chunks_x(int dx, int camera_chunk_x, int camera_chunk_y,
   for (int z = start_z; z < RENDER_DIAMETER + start_z; z++) {
     for (int y = start_y; y < RENDER_DIAMETER + start_y; y++) {
       auto move_chunks = [this, added_edge, removed_edge, z, y]() {
-        auto added = std::make_tuple(added_edge, y, z);
-        auto removed = std::make_tuple(removed_edge, y, z);
+        auto added = Chunk_Coordinate{added_edge, y, z};
+        auto removed = Chunk_Coordinate{removed_edge, y, z};
 
         std::scoped_lock<std::mutex> lock(this->mutex);
 
@@ -182,8 +172,8 @@ void Map::new_chunks_y(int dy, int camera_chunk_x, int camera_chunk_y,
   for (int z = start_z; z < RENDER_DIAMETER + start_z; z++) {
     for (int x = start_x; x < RENDER_DIAMETER + start_x; x++) {
       auto move_chunks = [this, added_edge, removed_edge, z, x]() {
-        auto added = std::make_tuple(x, added_edge, z);
-        auto removed = std::make_tuple(x, removed_edge, z);
+        auto added = Chunk_Coordinate{x, added_edge, z};
+        auto removed = Chunk_Coordinate{x, removed_edge, z};
 
         std::scoped_lock<std::mutex> lock(this->mutex);
 
@@ -227,8 +217,8 @@ void Map::new_chunks_z(int dz, int camera_chunk_x, int camera_chunk_y,
   for (int y = start_y; y < RENDER_DIAMETER + start_y; y++) {
     for (int x = start_x; x < RENDER_DIAMETER + start_x; x++) {
       auto move_chunks = [this, added_edge, removed_edge, y, x]() {
-        auto added = std::make_tuple(x, y, added_edge);
-        auto removed = std::make_tuple(x, y, removed_edge);
+        auto added = Chunk_Coordinate{x, y, added_edge};
+        auto removed = Chunk_Coordinate{x, y, removed_edge};
 
         std::scoped_lock<std::mutex> lock(this->mutex);
 
