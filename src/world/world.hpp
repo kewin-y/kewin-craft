@@ -20,16 +20,20 @@ class Map
 public:
   Map();
   ~Map() = default;
-  Chunk_Map chunks;
 
   void setup(const glm::vec3 &camera_position);
   void update(const glm::vec3 &camera_position);
   void render(const Shader &shader);
 
 private:
+  Chunk_Map chunks;
+
   int last_camera_chunk_x, last_camera_chunk_y, last_camera_chunk_z;
+
   FastNoiseLite noise;
+
   mutable std::mutex mutex;
+
   void new_chunks_x(int dx, int camera_chunk_x, int camera_chunk_y,
                     int camera_chunk_z);
   void new_chunks_y(int dy, int camera_chunk_x, int camera_chunk_y,
