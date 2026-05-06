@@ -11,13 +11,13 @@ uniform vec3 world_pos;
 
 void main()
 {
-        uint a_x = (a_packed >> 24u) & 0xFFu;
-        uint a_y = (a_packed >> 16u) & 0xFFu;
-        uint a_z = (a_packed >> 8u) & 0xFFu;
-        uint a_type = a_packed & 0xFFu;
+  uint a_x = (a_packed >> 24u) & 0xFFu;
+  uint a_y = (a_packed >> 16u) & 0xFFu;
+  uint a_z = (a_packed >> 8u) & 0xFFu;
+  uint a_type = a_packed & 0xFFu;
 
-        vec3 a_position = vec3(a_x, a_y, a_z);
+  vec3 a_position = vec3(a_x, a_y, a_z);
 
-        v_uv = a_uv;
-        gl_Position = mvp * vec4(world_pos + a_position, 1.0f);
+  v_uv = a_uv;
+  gl_Position = mvp * vec4(world_pos + a_position, 1.0f);
 }

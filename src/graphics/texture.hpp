@@ -9,17 +9,17 @@ namespace kwnc
 class Texture
 {
 public:
-        Texture(const std::string &path);
-        ~Texture();
+  Texture(const std::string &path);
+  ~Texture();
 
-        unsigned int get_id() const;
-        void bind() const;
+  unsigned int get_id() const;
+  void bind() const;
 
 private:
-        unsigned int id;
-        int width;
-        int height;
-        int channels;
+  unsigned int id;
+  int width;
+  int height;
+  int channels;
 };
 } // namespace kwnc
 
