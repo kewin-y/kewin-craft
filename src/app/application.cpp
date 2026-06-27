@@ -7,6 +7,9 @@
 #include <glm/glm.hpp>
 // #include <iostream>
 
+
+// #define DONT_GENERATE_NEW_CHUNKS
+
 namespace kwnc
 {
 App::App()
@@ -23,7 +26,7 @@ App::App()
   // auto start = std::chrono::system_clock::now();
 
   // This shit is stupid
-  map.setup(camera.position);
+  // map.setup(camera.position);
   // auto end = std::chrono::system_clock::now();
   // std::chrono::duration<double> elapsed = end - start;
   // std::cout << "map.setup took: " << elapsed.count() << "s" << std::endl;

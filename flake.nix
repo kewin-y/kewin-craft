@@ -40,6 +40,7 @@
               libxi
               libxinerama
               libxcursor
+              gdb
               ;
           };
 
