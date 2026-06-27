@@ -8,19 +8,18 @@ namespace kwnc
 class Shader
 {
 public:
-        Shader(const std::string &vertex_path,
-               const std::string &fragment_path);
-        ~Shader();
+  Shader(const std::string &vertex_path, const std::string &fragment_path);
+  ~Shader();
 
-        unsigned int get_id() const;
-        void use() const;
+  unsigned int get_id() const;
+  void use() const;
 
-        void uniform_m4(const std::string &name, float *mat) const;
-        void uniform_v3(const std::string &name, float *vec) const;
-        void uniform_i(const std::string &name, int i) const;
+  void uniform_m4(const std::string &name, float *mat) const;
+  void uniform_v3(const std::string &name, float *vec) const;
+  void uniform_i(const std::string &name, int i) const;
 
 private:
-        unsigned int id;
+  unsigned int id;
 };
 
 } // namespace kwnc

@@ -117,7 +117,7 @@ void Chunk::generate_mesh()
   vertex_data.reserve(4096);
 
   for (int i = 0; i < CHUNK_SIZE_CUBED; ++i) {
-    convert_to_pos_in_chunk(i, &x, &y, &z);
+    convert_to_chunk_idx(i, x, y, z);
 
     if (blocks[i] == Block::AIR)
       continue;
@@ -215,11 +215,11 @@ int Chunk::convert_to_block_idx(int x, int y, int z)
   return z + y * CHUNK_SIZE + x * CHUNK_SIZE_SQUARED;
 }
 
-void Chunk::convert_to_pos_in_chunk(int i, int *x, int *y, int *z)
+void Chunk::convert_to_chunk_idx(int i, int &x, int &y, int &z)
 {
-  *x = i / CHUNK_SIZE_SQUARED;
-  *y = (i / CHUNK_SIZE) % CHUNK_SIZE;
-  *z = i % CHUNK_SIZE;
+  x = i / CHUNK_SIZE_SQUARED;
+  y = (i / CHUNK_SIZE) % CHUNK_SIZE;
+  z = i % CHUNK_SIZE;
 }
 
 glm::vec2 Chunk::get_uv(u_int8_t type, const glm::vec2 &local_uv)

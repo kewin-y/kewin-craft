@@ -2,7 +2,6 @@
 #include "glad/gl.h"
 #include "world/block.hpp"
 #include <cstddef>
-#include <iostream>
 
 namespace kwnc
 {
