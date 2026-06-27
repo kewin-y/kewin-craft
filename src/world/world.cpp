@@ -11,7 +11,7 @@
 
 namespace kwnc
 {
-Map::Map() : noise{}
+World::World() : noise{}
 {
   chunks.reserve(MAX_LOADED_CHUNKS);
   noise.SetNoiseType(FastNoiseLite::NoiseType_Perlin);
@@ -20,7 +20,7 @@ Map::Map() : noise{}
   noise.SetSeed(0);
 }
 
-void Map::setup(const glm::vec3 &camera_position)
+void World::setup(const glm::vec3 &camera_position)
 {
   int camera_chunk_x, camera_chunk_y, camera_chunk_z;
   int start_x, start_y, start_z;
@@ -63,7 +63,7 @@ void Map::setup(const glm::vec3 &camera_position)
   }
 }
 
-void Map::update(const glm::vec3 &camera_position)
+void World::update(const glm::vec3 &camera_position)
 {
   int camera_chunk_x, camera_chunk_y, camera_chunk_z;
   int dx, dy, dz;
@@ -91,7 +91,7 @@ void Map::update(const glm::vec3 &camera_position)
   last_camera_chunk_z = camera_chunk_z;
 }
 
-void Map::render(const Shader &shader)
+void World::render(const Shader &shader)
 {
 
   for (auto &[pos, chunk] : chunks) {
@@ -107,7 +107,7 @@ void Map::render(const Shader &shader)
   }
 }
 
-void Map::new_chunks_x(int dx, int camera_chunk_x, int camera_chunk_y,
+void World::new_chunks_x(int dx, int camera_chunk_x, int camera_chunk_y,
                        int camera_chunk_z)
 {
   if (dx == 0)
@@ -152,7 +152,7 @@ void Map::new_chunks_x(int dx, int camera_chunk_x, int camera_chunk_y,
   }
 }
 
-void Map::new_chunks_y(int dy, int camera_chunk_x, int camera_chunk_y,
+void World::new_chunks_y(int dy, int camera_chunk_x, int camera_chunk_y,
                        int camera_chunk_z)
 {
   if (dy == 0)
@@ -197,7 +197,7 @@ void Map::new_chunks_y(int dy, int camera_chunk_x, int camera_chunk_y,
   }
 }
 
-void Map::new_chunks_z(int dz, int camera_chunk_x, int camera_chunk_y,
+void World::new_chunks_z(int dz, int camera_chunk_x, int camera_chunk_y,
                        int camera_chunk_z)
 {
   if (dz == 0)

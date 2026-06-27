@@ -21,6 +21,8 @@ App::App()
 
   // TODO: Make an actual logger class
   // auto start = std::chrono::system_clock::now();
+
+  // This shit is stupid
   map.setup(camera.position);
   // auto end = std::chrono::system_clock::now();
   // std::chrono::duration<double> elapsed = end - start;

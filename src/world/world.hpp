@@ -1,5 +1,5 @@
-#ifndef MAP_HPP
-#define MAP_HPP
+#ifndef WORLD_HPP
+#define WORLD_HPP
 
 #include "FastNoiseLite.h"
 #include "graphics/shader.hpp"
@@ -15,11 +15,11 @@ namespace kwnc
 
 using Chunk_Map = std::unordered_map<Chunk_Coordinate, std::shared_ptr<Chunk>,
                                      Chunk_Coordinate_Hasher>;
-class Map
+class World
 {
 public:
-  Map();
-  ~Map() = default;
+  World();
+  ~World() = default;
 
   void setup(const glm::vec3 &camera_position);
   void update(const glm::vec3 &camera_position);

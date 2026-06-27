@@ -25,7 +25,7 @@ private:
   const Shader shader;
   const Texture texture;
   Camera camera;
-  Map map;
+  World map;
 
   void handle_keyboard();
 };
