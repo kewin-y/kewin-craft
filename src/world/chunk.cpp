@@ -113,8 +113,8 @@ void Chunk::generate_mesh()
   int x, y, z;
   size_t vertex_count, size;
 
-  // FIXME: Why 4096? No magic numbers please
-  vertex_data.reserve(4096);
+  // Reserve enough for one solid outer face
+  vertex_data.reserve(CHUNK_SIZE_SQUARED * 6 * 6);
 
   for (int i = 0; i < CHUNK_SIZE_CUBED; ++i) {
     convert_to_chunk_idx(i, x, y, z);
@@ -124,6 +124,7 @@ void Chunk::generate_mesh()
 
     auto block_type = static_cast<u_int8_t>(blocks[i]);
 
+    // TODO: replace 6 magic constant. it is the number of vertices per face
     // Negative Z
     if (z - 1 < 0 || blocks[convert_to_block_idx(x, y, z - 1)] == Block::AIR) {
       for (int j = 0; j < 6; ++j) {
@@ -132,19 +133,20 @@ void Chunk::generate_mesh()
                               ((face_nz[j][2] + z) << 8u) | block_type;
         Block_Vertex vertex = {.normal = normals_nz[j],
                                .uv = get_uv(block_type, uvs[j]),
-                               .packed_coord_type = packed};
+                               .packed_coord_and_type = packed};
         vertex_data.push_back(vertex);
       }
     }
     // Positive Z
-    if (z + 1 > 31 || blocks[convert_to_block_idx(x, y, z + 1)] == Block::AIR) {
+    if (z + 1 > CHUNK_SIZE - 1 ||
+        blocks[convert_to_block_idx(x, y, z + 1)] == Block::AIR) {
       for (int j = 0; j < 6; ++j) {
         unsigned int packed = ((face_pz[j][0] + x) << 24u) |
                               ((face_pz[j][1] + y) << 16u) |
                               ((face_pz[j][2] + z) << 8u) | block_type;
         Block_Vertex vertex = {.normal = normals_pz[j],
                                .uv = get_uv(block_type, uvs[j]),
-                               .packed_coord_type = packed};
+                               .packed_coord_and_type = packed};
         vertex_data.push_back(vertex);
       }
     }
@@ -156,19 +158,20 @@ void Chunk::generate_mesh()
                               ((face_nx[j][2] + z) << 8u) | block_type;
         Block_Vertex vertex = {.normal = normals_nx[j],
                                .uv = get_uv(block_type, uvs[j]),
-                               .packed_coord_type = packed};
+                               .packed_coord_and_type = packed};
         vertex_data.push_back(vertex);
       }
     }
     // Positive X
-    if (x + 1 > 31 || blocks[convert_to_block_idx(x + 1, y, z)] == Block::AIR) {
+    if (x + 1 > CHUNK_SIZE - 1 ||
+        blocks[convert_to_block_idx(x + 1, y, z)] == Block::AIR) {
       for (int j = 0; j < 6; ++j) {
         unsigned int packed = ((face_px[j][0] + x) << 24u) |
                               ((face_px[j][1] + y) << 16u) |
                               ((face_px[j][2] + z) << 8u) | block_type;
         Block_Vertex vertex = {.normal = normals_px[j],
                                .uv = get_uv(block_type, uvs[j]),
-                               .packed_coord_type = packed};
+                               .packed_coord_and_type = packed};
         vertex_data.push_back(vertex);
       }
     }
@@ -180,19 +183,20 @@ void Chunk::generate_mesh()
                               ((face_ny[j][2] + z) << 8u) | block_type;
         Block_Vertex vertex = {.normal = normals_ny[j],
                                .uv = get_uv(block_type, uvs[j]),
-                               .packed_coord_type = packed};
+                               .packed_coord_and_type = packed};
         vertex_data.push_back(vertex);
       }
     }
     // Positive Y
-    if (y + 1 > 31 || blocks[convert_to_block_idx(x, y + 1, z)] == Block::AIR) {
+    if (y + 1 > CHUNK_SIZE - 1 ||
+        blocks[convert_to_block_idx(x, y + 1, z)] == Block::AIR) {
       for (int j = 0; j < 6; ++j) {
         unsigned int packed = ((face_py[j][0] + x) << 24u) |
                               ((face_py[j][1] + y) << 16u) |
                               ((face_py[j][2] + z) << 8u) | block_type;
         Block_Vertex vertex = {.normal = normals_py[j],
                                .uv = get_uv(block_type, uvs[j]),
-                               .packed_coord_type = packed};
+                               .packed_coord_and_type = packed};
         vertex_data.push_back(vertex);
       }
     }
