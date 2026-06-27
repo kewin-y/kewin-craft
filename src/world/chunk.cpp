@@ -3,7 +3,6 @@
 #include "world/block.hpp"
 #include <cstdint>
 #include <glm/common.hpp>
-#include <iostream>
 #include <vector>
 
 // TODO: Move this to another file
@@ -59,19 +58,10 @@ namespace kwnc
 Chunk::Chunk(int x, int y, int z)
     : chunk_x{x}, chunk_y{y}, chunk_z{z}, vertex_array{}
 {
-
-  try {
-    blocks = new Block[CHUNK_SIZE_CUBED];
-
-    for (int i = 0; i < CHUNK_SIZE_CUBED; ++i) {
-      blocks[i] = Block::AIR;
-    }
-  } catch (const std::exception &e) {
-    std::cout << e.what() << std::endl;
+  for (auto &block : blocks) {
+    block = Block::AIR;
   }
 }
-
-Chunk::~Chunk() { delete[] blocks; }
 
 void Chunk::fill()
 {

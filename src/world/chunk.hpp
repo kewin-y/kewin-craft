@@ -4,6 +4,7 @@
 #include "FastNoiseLite.h"
 #include "graphics/block_vertex_array.hpp"
 #include "world/block.hpp"
+#include <array>
 #include <cstdint>
 #include <glm/glm.hpp>
 
@@ -23,7 +24,7 @@ public:
   bool dirty = false;
 
   Chunk(int x, int y, int z);
-  ~Chunk();
+  ~Chunk() = default;
 
   void generate_terrain(const FastNoiseLite &noise);
   void fill();
@@ -32,8 +33,7 @@ public:
   void generate_mesh();
 
 private:
-  // TODO: change to std::array
-  Block *blocks;
+  std::array<Block, CHUNK_SIZE_CUBED> blocks;
 
   static int convert_to_block_idx(int x, int y, int z);
   static void convert_to_pos_in_chunk(int i, int *x, int *y, int *z);
