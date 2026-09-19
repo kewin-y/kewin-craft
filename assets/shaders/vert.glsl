@@ -11,6 +11,9 @@ uniform vec3 world_pos;
 
 void main()
 {
+  // This is suboptimal
+  // I'm allocating 8 bits per coordinate, but each coordinate only requires 5 bits
+  // That's because chunk size is 32 blocks and 32 = 2^5
   uint a_x = (a_packed >> 24u) & 0xFFu;
   uint a_y = (a_packed >> 16u) & 0xFFu;
   uint a_z = (a_packed >> 8u) & 0xFFu;

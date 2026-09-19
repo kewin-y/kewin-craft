@@ -29,6 +29,7 @@ void Block_Vertex_Array::init()
                         (void *)(3 * sizeof(float)));
   glEnableVertexAttribArray(1);
 
+  // a_packed_coord_type
   glVertexAttribIPointer(2, 1, GL_UNSIGNED_INT, stride,
                          (void *)(5 * sizeof(float)));
   glEnableVertexAttribArray(2);
